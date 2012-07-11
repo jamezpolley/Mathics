@@ -408,13 +408,13 @@ class _Plot3D(Builtin):
             return False
 
         if plotpoints == 'None':
-            plotpoints = [7, 7]
+            plotpoints = [14, 14]
         elif check_plotpoints(plotpoints):
             plotpoints = [plotpoints, plotpoints]
 
         if not (isinstance(plotpoints, list) and len(plotpoints) == 2 and check_plotpoints(plotpoints[0]) and check_plotpoints(plotpoints[1])):
             evaluation.message(self.get_name(), 'invpltpts', plotpoints)
-            plotpoints = [7, 7]
+            plotpoints = [14, 14]
 
         # MaxRecursion Option
         max_recursion_limit = 15
@@ -440,6 +440,7 @@ class _Plot3D(Builtin):
             evaluation.message(self.get_name(), 'invmaxrec', maxrecursion, max_recursion_limit)
         assert isinstance(maxrecursion, int)
 
+        # Draw the Plot
         graphics = []
         for indx, f in enumerate(functions):
             stored = {}
@@ -454,40 +455,11 @@ class _Plot3D(Builtin):
                     stored[(x_value, y_value)] = value
                 return value
 
-            v_borders = [None, None] 
-
             triangles = []
-
-            eps = 0.01
-
-            def triangle(x1, y1, x2, y2, x3, y3, depth=None):
-                if depth is None:
-                    x1, x2, x3 = [xstart + value * (xstop - xstart) for value in (x1, x2, x3)]
-                    y1, y2, y3 = [ystart + value * (ystop - ystart) for value in (y1, y2, y3)]
-                    depth = 0
+            def triangle(x1, y1, x2, y2, x3, y3):
+                x1, x2, x3 = [xstart + value * (xstop - xstart) for value in (x1, x2, x3)]
+                y1, y2, y3 = [ystart + value * (ystop - ystart) for value in (y1, y2, y3)]
                 v1, v2, v3 = eval_f(x1, y1), eval_f(x2, y2), eval_f(x3, y3)
-                for v in (v1, v2, v3):
-                    if v is not None:
-                        if v_borders[0] is None or v < v_borders[0]:
-                            v_borders[0] = v
-                        if v_borders[1] is None or v > v_borders[1]:
-                            v_borders[1] = v
-                if v1 is None or v2 is None or v3 is None:
-                    return
-                limit = (v_borders[1] - v_borders[0]) * eps
-                if depth < maxrecursion:
-                    if abs(v1 - v2) > limit:
-                        triangle(x1, y1, x3, y3, (x1+x2)/2, (y1+y2)/2, depth+1)
-                        triangle(x2, y2, x3, y3, (x1+x2)/2, (y1+y2)/2, depth+1)
-                        return
-                    if abs(v2 - v3) > limit:
-                        triangle(x1, y1, x2, y2, (x2+x3)/2, (y2+y3)/2, depth+1)
-                        triangle(x1, y1, x3, y3, (x2+x3)/2, (y2+y3)/2, depth+1)
-                        return
-                    if abs(v1 - v3) > limit:
-                        triangle(x2, y2, x1, y1, (x1+x3)/2, (y1+y3)/2, depth+1)
-                        triangle(x2, y2, x3, y3, (x1+x3)/2, (y1+y3)/2, depth+1)
-                        return
                 triangles.append([(x1, y1, v1), (x2, y2, v2), (x3, y3, v3)])
 
             numx = plotpoints[0] * 1.0
@@ -499,39 +471,42 @@ class _Plot3D(Builtin):
 
             # Mesh should just be looking up stored values
             mesh_points = []
-            for xi in range(plotpoints[0]+1):
-                xval = xstart + xi/numx * (xstop - xstart)
-                mesh_row = []
-                for yi in range(plotpoints[1]+1):
-                    yval = ystart + yi/numy * (ystop - ystart)
-                    mesh_row.append((xval, yval, eval_f(xval, yval)))
-                mesh_points.append(mesh_row)
-
-            for yi in range(plotpoints[1]+1):
-                yval = ystart + yi/numy * (ystop - ystart)
-                mesh_col = []
+            if mesh == 'Full':
                 for xi in range(plotpoints[0]+1):
                     xval = xstart + xi/numx * (xstop - xstart)
-                    mesh_col.append((xval, yval, eval_f(xval, yval)))
-                mesh_points.append(mesh_col)
+                    mesh_row = []
+                    for yi in range(plotpoints[1]+1):
+                        yval = ystart + yi/numy * (ystop - ystart)
+                        mesh_row.append((xval, yval, eval_f(xval, yval)))
+                    mesh_points.append(mesh_row)
 
-            # Fix the grid near recursions
-            x_grids = [xstart + (xi / numx) * (xstop - xstart) for xi in range(plotpoints[0] +1)]
-            y_grids = [ystart + (yi / numy) * (ystop - ystart) for yi in range(plotpoints[1] +1)]
+                for yi in range(plotpoints[1]+1):
+                    yval = ystart + yi/numy * (ystop - ystart)
+                    mesh_col = []
+                    for xi in range(plotpoints[0]+1):
+                        xval = xstart + xi/numx * (xstop - xstart)
+                        mesh_col.append((xval, yval, eval_f(xval, yval)))
+                    mesh_points.append(mesh_col)
 
-            for (xval, yval) in stored.keys():
-                if xval in x_grids:
-                    x_index = int((xval - xstart) * numx / (xstop - xstart) + 0.5)
-                    mesh_points[x_index].append((xval, yval, eval_f(xval, yval)))
-                if yval in y_grids:
-                    y_index = int((yval - ystart) * numy / (ystop - ystart) + plotpoints[0] + 1.5)
-                    mesh_points[y_index].append((xval, yval, eval_f(xval, yval)))
+                # Fix the grid near recursions
+                x_grids = [xstart + (xi / numx) * (xstop - xstart) for xi in range(plotpoints[0] +1)]
+                y_grids = [ystart + (yi / numy) * (ystop - ystart) for yi in range(plotpoints[1] +1)]
 
-            for mesh_line in mesh_points:
-                mesh_line.sort()
+                for (xval, yval) in stored.keys():
+                    if xval in x_grids:
+                        x_index = int((xval - xstart) * numx / (xstop - xstart) + 0.5)
+                        mesh_points[x_index].append((xval, yval, eval_f(xval, yval)))
+                    if yval in y_grids:
+                        y_index = int((yval - ystart) * numy / (ystop - ystart) + plotpoints[0] + 1.5)
+                        mesh_points[y_index].append((xval, yval, eval_f(xval, yval)))
+
+                for mesh_line in mesh_points:
+                    mesh_line.sort()
+
+            if mesh == 'All':
+                mesh_points = triangles
 
             v_min = v_max = None
-
             for t in triangles:
                 for tx, ty, v in t:
                     if v_min is None or v < v_min:
@@ -702,17 +677,13 @@ class Plot3D(_Plot3D):
         graphics = []
         for p1, p2, p3 in triangles:
             graphics.append(Expression('Polygon', Expression('List', Expression('List', *p1), Expression('List', *p2), Expression('List', *p3))))
-        # Add the Grid
-        if mesh == 'Full':
-            for xi in range(len(mesh_points)):
-                line = []
-                for yi in range(len(mesh_points[xi])):
-                    line.append(Expression('List', mesh_points[xi][yi][0], mesh_points[xi][yi][1], mesh_points[xi][yi][2]))
-                graphics.append(Expression('Line', Expression('List', *line)))
-        elif mesh == 'All':
-            for p1, p2, p3 in triangles:
-                line = [from_python(p1),from_python(p2), from_python(p3)]
-                graphics.append(Expression('Line', Expression('List', *line)))
+
+        # Add the Mesh
+        for xi in range(len(mesh_points)):
+            line = []
+            for yi in range(len(mesh_points[xi])):
+                line.append(Expression('List', mesh_points[xi][yi][0], mesh_points[xi][yi][1], mesh_points[xi][yi][2]))
+            graphics.append(Expression('Line', Expression('List', *line)))
         return graphics
 
     def final_graphics(self, graphics, options):
@@ -823,16 +794,13 @@ class DensityPlot(_Plot3D):
         graphics.append(Expression('Polygon', Expression('List', *points),
             Expression('Rule', Symbol('VertexColors'), Expression('List', *vertex_colors))))
 
-        if mesh == 'Full':
-            for xi in range(len(mesh_points)):
-                line = []
-                for yi in range(len(mesh_points[xi])):
-                    line.append(Expression('List', mesh_points[xi][yi][0], mesh_points[xi][yi][1]))
-                graphics.append(Expression('Line', Expression('List', *line)))
-        elif mesh == 'All':
-            for p1, p2, p3 in triangles:
-                line = [from_python(p1[:2]), from_python(p2[:2]), from_python(p3[:2])]
-                graphics.append(Expression('Line', Expression('List', *line)))
+        # Add the Mesh
+        for xi in range(len(mesh_points)):
+            line = []
+            for yi in range(len(mesh_points[xi])):
+                line.append(Expression('List', mesh_points[xi][yi][0], mesh_points[xi][yi][1]))
+            graphics.append(Expression('Line', Expression('List', *line)))
+
         return graphics
 
     def final_graphics(self, graphics, options):

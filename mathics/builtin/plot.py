@@ -184,7 +184,7 @@ class _Plot(Builtin):
         maxrecursion = maxrecursion_option.to_python()
         try:
             if maxrecursion == 'Automatic':
-                maxrecursion = 3
+                maxrecursion = 2
             elif maxrecursion == float('inf'):
                 maxrecursion = max_recursion_limit
                 raise ValueError
@@ -416,6 +416,30 @@ class _Plot3D(Builtin):
             evaluation.message(self.get_name(), 'invpltpts', plotpoints)
             plotpoints = [7, 7]
 
+        # MaxRecursion Option
+        max_recursion_limit = 15
+        maxrecursion_option = self.get_option(options, 'MaxRecursion', evaluation)
+        maxrecursion = maxrecursion_option.to_python()
+        try:
+            if maxrecursion == 'Automatic':
+                maxrecursion = 3
+            elif maxrecursion == float('inf'):
+                maxrecursion = max_recursion_limit
+                raise ValueError
+            elif isinstance(maxrecursion, int):
+                if maxrecursion > max_recursion_limit:
+                    maxrecursion = max_recursion_limit
+                    raise ValueError
+                if maxrecursion < 0:
+                    maxrecursion = 0
+                    raise ValueError
+            else:
+                maxrecursion = 0
+                raise ValueError
+        except ValueError:
+            evaluation.message(self.get_name(), 'invmaxrec', maxrecursion, max_recursion_limit)
+        assert isinstance(maxrecursion, int)
+
         graphics = []
         for indx, f in enumerate(functions):
             stored = {}
@@ -451,7 +475,7 @@ class _Plot3D(Builtin):
                 if v1 is None or v2 is None or v3 is None:
                     return
                 limit = (v_borders[1] - v_borders[0]) * eps
-                if depth < 2:
+                if depth < maxrecursion:
                     if abs(v1 - v2) > limit:
                         triangle(x1, y1, x3, y3, (x1+x2)/2, (y1+y2)/2, depth+1)
                         triangle(x2, y2, x3, y3, (x1+x2)/2, (y1+y2)/2, depth+1)
@@ -660,6 +684,7 @@ class Plot3D(_Plot3D):
     options.update({
         'Axes': 'False',
         'AspectRatio': '1',
+        'MaxRecursion': 'Automatic',
         'Mesh': 'Full',
         'PlotPoints': 'None',
     })
@@ -724,6 +749,7 @@ class DensityPlot(_Plot3D):
     options.update({
         'Axes': 'False',
         'AspectRatio': '1',
+        'MaxRecursion': 'Automatic',
         'Mesh': 'None',
         'Frame': 'True',
         'ColorFunction': 'Automatic',

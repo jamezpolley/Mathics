@@ -1227,4 +1227,45 @@ class PreDecrement(PrefixOperator):
         '--x_': 'x = x - 1',
     }
     
+class Information(PrefixOperator):
+    """
+    <dl>
+    <dt>'Information[$symbol$]'
+      <dd>prints information about $symbol$.
+    </dl>
+    """
 
+    #TODO: Examples (that pass tests)
+    """
+    >> Information[Log]
+    >> ??Plot
+    """
+
+    operator = '??'
+    precedence = 670
+    attributes = ('HoldAll', 'Protected', 'ReadProtected')
+
+    def apply(self, symbol, evaluation):
+        'Information[symbol_Symbol]'
+
+        result = []
+        #TODO Add Definitions
+
+        #TODO Add Description
+
+        # Add Attributes
+        attributes = Expression('Attributes', symbol)
+        attributes_result = attributes.evaluate(evaluation)
+        result.append(Expression('HoldForm', Expression('Set', attributes, attributes_result)))
+
+        # Add Options 
+        options = Expression('Options', symbol)
+        options_result = options.evaluate(evaluation)
+
+        if len(options_result.get_leaves()) != 0:
+            result.append(Expression('HoldForm', Expression('Set', options, options_result)))
+
+        expr = Expression('Row', Expression('List', *result), String("\n"))
+        evaluation.print_out(expr)
+
+        return Symbol('Null')

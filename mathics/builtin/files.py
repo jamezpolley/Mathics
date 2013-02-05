@@ -112,6 +112,7 @@ class InitialDirectory(Predefined):
     """
 
     name = '$InitialDirectory'
+    attributes = ('Locked', 'Protected')
 
     def evaluate(self, evaluation):
         global INITIAL_DIR
@@ -259,7 +260,6 @@ class Path(Predefined):
      = ...
     """
 
-    attributes = ('Protected')
     name = '$Path'
 
     def evaluate(self, evaluation):

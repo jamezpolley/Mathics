@@ -41,12 +41,48 @@ class RecursionLimit(Predefined):
         'limset': "Cannot set $RecursionLimit to `1`; value must be an integer between 20 and %d." % settings.MAX_RECURSION_DEPTH,
     }
     
-    rules = {
-        '$RecursionLimit': str(value),
-    }
-    
     def evaluate(self, evaluation):
         return Integer(self.value)
+
+#TODO
+#
+#class IterationLimit(Predefined):
+#    """
+#    >> g[100] = 0;
+#    >> g[n_] := g[n + 1]
+#    >> Block[{$IterationLimit = 100}, g[0]]
+#     : Iteration limit of 100 exceeded.
+#     = Hold[g[99 + 1]]
+#    >> Block[{$IterationLimit = 102}, g[0]]
+#     = 0
+#
+#    >> f[n_] := f[n + 1]
+#    >> f[0]
+#     : Iteration limit of 1024 exceeded.
+#eded.
+#     = Hold[f[1023 + 1]]
+#
+#    #> $IterationLimit = 1
+#     : Cannot set $IterationLimit to 1; value must be Infinity or an integer at
+#     least 20.
+#     = 1
+#    #> $IterationLimit = 100
+#     = 100
+#    #> f[1]
+#     :  Iteration limit of 100 exceeded.
+#     = Hold[f[100 + 1]]
+#    """
+#
+#    name = '$IterationLimit'
+#    value = 1024
+#
+#    messages = {
+#        'itlim': 'Iteration limit of `1` exceeded.',
+#        'limset' : 'Cannot set `1` to `2`; value must be Infinity or an integer at least `3`.',
+#    }
+#
+#    def evaluate(self, evaluation):
+#        Integer(self.value)
     
 class Hold(Builtin):
     """

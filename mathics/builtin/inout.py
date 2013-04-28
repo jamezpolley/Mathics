@@ -12,8 +12,18 @@ from mathics.builtin.comparison import expr_min
 from mathics.builtin.lists import list_boxes
 from mathics.builtin.options import options_to_rules
 from mathics.core.expression import Expression, String, Symbol, Integer, Rational, Real, Complex, BoxError
+from mathics.core.characters import tex_characters
 
 MULTI_NEWLINE_RE = re.compile(r"\n{2,}")
+NONASCII_RE = re.compile(u'([\u007f-\uFFFF])')
+
+def encode_tex(string):
+    for (c, r) in tex_characters.iteritems():
+        string = string.replace(c, r)
+    def repl_char(match):
+        return u'$\\unicode{{{0}}}$'.format(repr(match.group(1))[4:-1])
+    string = NONASCII_RE.sub(repl_char, string)
+    return string
 
 class Format(Builtin):
     """
@@ -1046,6 +1056,12 @@ class TeXForm(Builtin):
      
     #> {"hi","you"} //InputForm //TeXForm
      = \left\{\text{"hi"}, \text{"you"}\right\}
+
+    #> TeXForm[\[Gamma]]
+     = \gamma
+
+    #> TeXForm["1\[AE]"]
+     = \text{1{\ae}}
     """
     
     def apply_tex(self, expr, evaluation):
@@ -1055,6 +1071,8 @@ class TeXForm(Builtin):
         try:
             tex = boxes.boxes_to_tex(evaluation=evaluation)
             tex = MULTI_NEWLINE_RE.sub('\n', tex)   # replace multiple newlines by a single newline (relevent between asy-blocks)
+            tex = tex.replace(u' \uF74C', u' \, \uF74C')    #DifferentialD hack
+            tex = encode_tex(tex)
         except BoxError:
             evaluation.message('General', 'notboxes', String('%s' % boxes))
             tex = ''

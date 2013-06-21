@@ -10,9 +10,8 @@ from mathics.builtin.base import Builtin
 from mathics.core.expression import Expression, from_python, Symbol, String
 from mathics.settings import ROOT_DIR
 
-
 def load_element_data():
-    element_file = open(ROOT_DIR + 'data/element.csv', 'rb')
+    element_file = open(ROOT_DIR + 'data/element.csv', 'r')
     reader = csvreader(element_file, delimiter='\t')
     element_data = []
     for row in reader:

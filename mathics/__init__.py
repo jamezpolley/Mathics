@@ -2,9 +2,9 @@
 
 # force utf8 encoding
 import sys
-import codecs
-writer = codecs.getwriter("utf-8")
-sys.stdout = writer(sys.stdout)
+#import codecs
+#writer = codecs.getwriter("utf-8")
+#sys.stdout = writer(sys.stdout)
 
 
 def get_version():

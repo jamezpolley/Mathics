@@ -27,20 +27,17 @@ import sys
 from setuptools import setup, Command, Extension
 
 # Ensure user has the correct Python version
-if not (2, 5) <= sys.version_info[:2] <= (2, 7):
-    print("Mathics supports Python 2.5 upto Python 2.7. \
-Python %d.%d detected" % sys.version_info[:2])
+if sys.version_info[:2] < (2, 6):
+    print("Mathics supports Python 2.6 and later. "
+          "Python {0:0}.{0:1} detected".format(sys.version_info[:2]))
     sys.exit(-1)
 
 from mathics import settings
 
-if sys.subversion[0] == 'PyPy':
-    is_PyPy = True
-else:
-    is_PyPy = False
+is_PyPy = '__pypy__' in sys.builtin_module_names
 
 try:
-    if is_PyPy:
+    if is_PyPy:             # No point in using Cython with PyPy
         raise ImportError
     from Cython.Distutils import build_ext
 except ImportError:
@@ -104,8 +101,7 @@ class initialize(Command):
         subprocess.call(
             [sys.executable, 'mathics/manage.py', 'syncdb', '--noinput'])
         os.chmod(database_file, 0o766)
-        print("")
-        print("Mathics initialized successfully.")
+        print("\nMathics initialized successfully.")
 
 CMDCLASS['initialize'] = initialize
 

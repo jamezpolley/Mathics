@@ -25,7 +25,9 @@ def get_version():
         version['mathics'] = settings.VERSION
     version['sympy'] = sympy.__version__
     version['mpmath'] = mpmath.__version__
-    version['python'] = sys.subversion[0] + " " + sys.version.split('\n')[0]
+    version['python'] = ' '.join([
+        'PyPy' if '__pypy__' in sys.builtin_module_names else 'CPython',
+        sys.version.split('\n')[0]])
     return version
 
 

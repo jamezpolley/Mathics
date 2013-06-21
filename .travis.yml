@@ -10,6 +10,7 @@ install:
   - "python setup.py install"
 before_script:
   #- "pep8"
+  - pip install sympy --use-mirrors
 script:
   - "python mathics/test.py"
 after_script:

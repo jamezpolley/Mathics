@@ -34,8 +34,8 @@ def get_version():
 def get_version_string(is_server, newlines=False):
     version = get_version()
     result = []
-    result.append(u"Mathics %s" % version['mathics'])
-    result.append(u"on %s" % version['python'])
+    result.append(u"Mathics {0}".format(version['mathics']))
+    result.append(u"on {0}".format(version['python']))
     libs = []
     if 'django' in version and is_server:
         libs.append("Django %s" % version['django'])

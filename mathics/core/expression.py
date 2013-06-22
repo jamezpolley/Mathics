@@ -255,7 +255,7 @@ class BaseExpression(object):
             # return False
         try:
             form.match(yield_match, self, {}, evaluation, fully=False)
-        except StopGenerator_BaseExpression_is_free, exc:
+        except StopGenerator_BaseExpression_is_free as exc:
             return exc.value
         if self.is_atom():
             return True
@@ -579,11 +579,11 @@ class Expression(BaseExpression):
             elif name == 'OptionsPattern':
                 return [2, 40, 0, 1, 1, 0, self.head, self.leaves, 1]
             else:
-                # Append (4,) to leaves so that longer expressions have higher
+                # Append [4] to leaves so that longer expressions have higher
                 # precedence
                 result = [
                     2, 0, 1, 1, 0, self.head.get_sort_key(True),
-                    [leaf.get_sort_key(True) for leaf in self.leaves] + [(4,)],
+                    [leaf.get_sort_key(True) for leaf in self.leaves] + [[4]],
                     1]
                 return result
         else:

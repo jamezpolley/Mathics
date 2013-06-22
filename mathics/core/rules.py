@@ -129,8 +129,12 @@ class BaseRule(object):
         if other is None:
             # None is not equal to any rule
             return -1
-        return cmp((self.system, self.pattern.get_sort_key(True)),
-                   (other.system, other.pattern.get_sort_key(True)))
+
+        def _cmp(x, y):
+            return (x > y) - (x < y)
+
+        return _cmp((self.system, self.pattern.get_sort_key(True)),
+                  (other.system, other.pattern.get_sort_key(True)))
 
 
 class Rule(BaseRule):

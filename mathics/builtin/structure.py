@@ -131,7 +131,10 @@ class OrderedQ(Builtin):
     def apply(self, e1, e2, evaluation):
         'OrderedQ[e1_, e2_]'
 
-        result = cmp(e1, e2)
+        def _cmp(x, y):
+            return (x > y) - (x < y)
+        result = _cmp(e1, e2)
+
         if result <= 0:
             return Symbol('True')
         else:

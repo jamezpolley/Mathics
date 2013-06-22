@@ -187,10 +187,13 @@ def do_cmp(x1, x2):
         real2 = sympy.Float(real2)
     # Bus error when not converting to mpf
 
+    def _cmp(x, y):
+        return (x > y) - (x < y)
+
     if real1 is not None and real2 is not None:
-        return cmp(x1, x2)
+        return _cmp(x1, x2)
     elif inf1 is not None and inf2 is not None:
-        return cmp(inf1, inf2)
+        return _cmp(inf1, inf2)
     elif inf1 is not None and real2 is not None:
         return inf1
     elif real1 is not None and inf2 is not None:

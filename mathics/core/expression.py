@@ -346,10 +346,16 @@ class Monomial(object):
     def __init__(self, exps_dict):
         self.exps = exps_dict
 
-    def __cmp__(self, other):
-        return self.__cmp(other)
+    def __lt__(self, other):
+        return self.__cmp(other) < 0
+
+    def __eq__(self, other):
+        return self.__cmp(other) == 0
 
     def __cmp(self, other):
+        def _cmp(x, y):
+            return (x > y) - (x < y)
+
         self_exps = self.exps.copy()
         other_exps = other.exps.copy()
         for var in self.exps:
@@ -376,16 +382,16 @@ class Monomial(object):
                 return 1    # self > other
             self_var, self_exp = self_exps[index]
             other_var, other_exp = other_exps[index]
-            var_cmp = cmp(self_var, other_var)
+            var_cmp = _cmp(self_var, other_var)
             if var_cmp != 0:
                 return var_cmp
             if self_exp != other_exp:
                 if index + 1 == self_len or index + 1 == other_len:
                     # smaller exponents first
-                    return cmp(self_exp, other_exp)
+                    return _cmp(self_exp, other_exp)
                 else:
                     # bigger exponents first
-                    return -cmp(self_exp, other_exp)
+                    return -_cmp(self_exp, other_exp)
             index += 1
         return 0
 

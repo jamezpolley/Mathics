@@ -1430,7 +1430,7 @@ clip(box((%s,%s), (%s,%s)));
         #    round_to_zero((xmax - xmin) / step_x_small)
 
         zero_tolerance = 0.01
-        if xmax > min:
+        if xmax > xmin:
             if xmin > 0 and xmin / (xmax - xmin) < zero_tolerance:
                 xmin = 0
             if xmax < 0 and xmax / (xmax - xmin) < zero_tolerance:

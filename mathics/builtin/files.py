@@ -2380,11 +2380,16 @@ class FileByteCount(Builtin):
 
     >> FileByteCount["ExampleData/sunflowers.jpg"]
      = 142286
+
+    #> FileByteCount["typo_filename_example.abcxyz"]
+     : File not found during FileByteCount[typo_filename_example.abcxyz].
+     = $Failed
     """
 
     messages = {
-        'fstr':
-        'File specification `1` is not a string of one or more characters.',
+        'nffil': 'File not found during `1`.',
+        'fstr': ('File specification `1` is not a string of one or '
+                 'more characters.'),
     }
 
     def apply(self, filename, evaluation):
@@ -2395,6 +2400,18 @@ class FileByteCount(Builtin):
             evaluation.message('FileByteCount', 'fstr', filename)
             return
         py_filename = py_filename[1:-1]
+
+        path = path_search(py_filename)
+
+        if path is None:
+            evaluation.message('FileByteCount', 'nffil',
+                               Expression('FileByteCount', filename))
+            return Symbol('$Failed')
+
+        try:
+            return from_python(os.stat(path).st_size)
+        except OSError:
+            pass
 
         try:
             with mathics_open(py_filename, 'rb') as f:

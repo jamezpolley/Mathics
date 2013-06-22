@@ -18,6 +18,8 @@ u"""
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from __future__ import print_function
+
 import threading
 import sys
 import cPickle as pickle
@@ -338,7 +340,7 @@ class Evaluation(object):
             return
 
         if settings.DEBUG_PRINT:
-            print 'MESSAGE: %s::%s (%s)' % (symbol, tag, args)
+            print('MESSAGE: {0}::{1} ({2})'.format(symbol, tag, args))
 
         pattern = Expression('MessageName', Symbol(symbol), String(tag))
         text = self.definitions.get_value(symbol, 'Messages', pattern, self)
@@ -366,7 +368,7 @@ class Evaluation(object):
         if self.out_callback:
             self.out_callback(self.out[-1])
         if settings.DEBUG_PRINT:
-            print 'OUT: ' + text
+            print('OUT: {0}'.format(text))
 
     def error(self, symbol, tag, *args):
         # Temporarily reset the recursion limit, to allow the message being

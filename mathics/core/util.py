@@ -18,6 +18,8 @@ u"""
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from __future__ import print_function
+
 import re
 
 FORMAT_RE = re.compile(r'\`(\d*)\`')
@@ -146,7 +148,7 @@ def subsets_2(items, min, max, without_duplicates=True):
                 yield subset
                 already.add(t)
             else:
-                print 'already taken'
+                print('already taken')
 
 
 def subranges(items, min_count, max, flexible_start=False, included=None,

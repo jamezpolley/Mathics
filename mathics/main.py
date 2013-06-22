@@ -18,6 +18,8 @@ u"""
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from __future__ import print_function
+
 import sys
 import argparse
 
@@ -62,7 +64,7 @@ class TerminalShell(object):
         term_colors = color_schemes.get(colors.upper())
         if term_colors is None:
             out_msg = "The 'colors' argument must be {0} or None"
-            print out_msg.format(repr(color_schemes.keys()))
+            print(out_msg.format(repr(color_schemes.keys())))
             quit()
 
         self.incolors, self.outcolors = term_colors
@@ -97,7 +99,7 @@ def to_output(text):
 
 
 def out_callback(out):
-    print to_output(unicode(out))
+    print(to_output(unicode(out)))
 
 # Adapted from code at http://mydezigns.wordpress.com/2009/09/22/balanced-brackets-in-python/       # nopep8
 
@@ -181,11 +183,11 @@ def main():
     if not (args.quiet or args.script):
         print_version(is_server=False)
         print_license()
-        print u"Quit by pressing {0}\n".format(quit_command)
+        print(u"Quit by pressing {0}\n".format(quit_command))
 
     if args.execute:
         total_input = args.execute.decode(sys.stdin.encoding)  # check encoding
-        print shell.get_in_prompt() + total_input
+        print(shell.get_in_prompt() + total_input)
         shell.evaluate(total_input)
         return
 
@@ -196,16 +198,17 @@ def main():
                 line = line.decode('utf-8')     # TODO: other encodings
                 if args.script and line_no == 0 and line.startswith('#!'):
                     continue
-                print shell.get_in_prompt(continued=total_input != '') + line,
+                print(shell.get_in_prompt(continued=total_input != '') + line,
+                      end=' ')
                 total_input += ' ' + line
                 if line != "" and wait_for_line(total_input):
                     continue
                 shell.evaluate(total_input)
                 total_input = ""
             except (KeyboardInterrupt):
-                print '\nKeyboardInterrupt'
+                print('\nKeyboardInterrupt')
             except (SystemExit, EOFError):
-                print "\n\nGood bye!\n"
+                print("\n\nGood bye!\n")
                 break
         if not args.persist:
             return
@@ -221,9 +224,9 @@ def main():
             shell.evaluate(total_input)
             total_input = ""
         except (KeyboardInterrupt):
-            print '\nKeyboardInterrupt'
+            print('\nKeyboardInterrupt')
         except (SystemExit, EOFError):
-            print "\n\nGood bye!\n"
+            print("\n\nGood bye!\n")
             break
 
 if __name__ == '__main__':

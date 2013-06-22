@@ -18,6 +18,8 @@ u"""
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from __future__ import print_function
+
 import sys
 import traceback
 
@@ -190,9 +192,9 @@ def nicepass(alpha=6, numeric=2):
 
 def email_user(user, subject, text):
     if settings.DEBUG_MAIL:
-        print '\n'.join(['-' * 70,
-                         'E-Mail to %s:\n%s\n%s' % (user.email, subject, text),
-                         '-' * 70])
+        print('-' * 70)
+        print('E-Mail to {0}:\n{1}\n{2}'.format(user.email, subject, text))
+        print('-' * 70)
     else:
         user.email_user(subject, text)
 

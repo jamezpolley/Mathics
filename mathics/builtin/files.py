@@ -4,7 +4,7 @@
 File Operations
 """
 
-from __future__ import with_statement
+from __future__ import with_statement, print_function
 import os
 import io
 import shutil
@@ -957,11 +957,11 @@ class Get(PrefixOperator):
             except:  # FIXME: something weird is going on here
                 syntax_error_count += 1
                 if syntax_error_count <= 4:
-                    print "Syntax Error (line {0} of {1})".format(
-                        lineno + 1, pypath)
+                    print("Syntax Error (line {0} of {1})".format(
+                        lineno + 1, pypath))
                 if syntax_error_count == 4:
-                    print "Supressing further syntax errors in {0}".format(
-                        pypath)
+                    print("Supressing further syntax errors in {0}".format(
+                        pypath))
             else:
                 if expr is not None:
                     expr = expr.evaluate(evaluation)
@@ -971,8 +971,8 @@ class Get(PrefixOperator):
             # TODO:
             # evaluation.message('Syntax', 'sntue', 'line {0} of
             # {1}'.format(lineno, pypath))
-            print 'Unexpected end of file (probably unfinished expression)'
-            print '    (line {0} of "{1}").'.format(lineno, pypath)
+            print('Unexpected end of file (probably unfinished expression)')
+            print('    (line {0} of "{1}").'.format(lineno, pypath))
             return Symbol('Null')
 
         return expr
@@ -2728,7 +2728,7 @@ class SetFileDate(Builtin):
             if py_attr == 'All':
                 os.utime(py_filename, (stattime, stattime))
         except OSError as e:
-            print e
+            print(e)
             # evaluation.message(...)
             return Symbol('$Failed')
 

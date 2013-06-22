@@ -924,7 +924,6 @@ class MathicsScanner:
         return t
 
     def t_ANY_error(self, t):
-        # print t
         raise ScanError(self.lexer.lexpos)
 
 

@@ -18,7 +18,7 @@ u"""
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from __future__ import with_statement
+from __future__ import with_statement, print_function
 
 import sys
 import re
@@ -62,12 +62,12 @@ def test_case(test, tests, index=0, quiet=False):
     part, chapter, section = tests.part, tests.chapter, tests.section
 
     def fail(why):
-        print u"%sTest failed: %s in %s / %s\n%s\n%s\n" % (
-            sep, section, part, chapter, test, why)
+        print(u"{0}Test failed: {1} in {2} / {3}\n{4}\n{5}\n".format(
+            sep, section, part, chapter, test, why))
         return False
 
     if not quiet:
-        print '%4d. TEST %s' % (index, test)
+        print('{0:4d}. TEST {1}'.format(index, test))
     try:
         evaluation = Evaluation(test, definitions, catch_interrupt=False)
     except Exception, exc:
@@ -102,7 +102,6 @@ def test_case(test, tests, index=0, quiet=False):
 
 
 def test_tests(tests, index, quiet=False):
-    # print tests
     definitions.reset_user_definitions()
     count = failed = 0
     failed_symbols = set()
@@ -131,7 +130,7 @@ def create_output(tests, output_xml, output_tex):
 def test_section(section, quiet=False):
     failed = 0
     index = 0
-    print 'Testing section %s' % section
+    print('Testing section {0}'.format(section))
     for tests in documentation.get_tests():
         if tests.section == section or tests.section == '$' + section:
             for test in tests.tests:
@@ -139,11 +138,12 @@ def test_section(section, quiet=False):
                 if not test_case(test, tests, index, quiet=quiet):
                     failed += 1
 
-    print ''
+    print('')
     if failed > 0:
-        print '%d test%s failed.' % (failed, 's' if failed != 1 else '')
+        print('{0:d} test{1} failed.'.format(
+            failed, 's' if failed != 1 else ''))
     else:
-        print 'OK'
+        print('OK')
 
 
 def open_ensure_dir(f, *args, **kwargs):
@@ -158,7 +158,7 @@ def open_ensure_dir(f, *args, **kwargs):
 
 def test_all(quiet=False, generate_output=False):
     if not quiet:
-        print "Testing %s" % get_version_string(False)
+        print("Testing {0}".format(get_version_string(False)))
 
     try:
         index = 0
@@ -176,40 +176,40 @@ def test_all(quiet=False, generate_output=False):
             failed_symbols.update(symbols)
         builtin_count = len(builtins)
     except KeyboardInterrupt:
-        print "\nAborted.\n"
+        print("\nAborted.\n")
         return
 
     if failed > 0:
-        print '%s' % sep
-    print "%d Tests for %d built-in symbols, %d passed, %d failed." % (
-        count, builtin_count, count - failed, failed)
+        print(sep)
+    print("{0} Tests for {1} built-in symbols, {2} passed, {3} failed.".format(
+        count, builtin_count, count - failed, failed))
     if failed_symbols:
-        print "Failed:"
+        print("Failed:")
         for part, chapter, section in sorted(failed_symbols):
-            print '  - %s in %s / %s' % (section, part, chapter)
+            print('  - {0} in {1} / {2}'.format(section, part, chapter))
 
     if failed == 0:
-        print '\nOK'
+        print('\nOK')
 
         if generate_output:
-            print 'Save XML'
+            print('Save XML')
             with open_ensure_dir(settings.DOC_XML_DATA, 'w') as output_file:
                 pickle.dump(output_xml, output_file, 0)
 
-            print 'Save TEX'
+            print('Save TEX')
             with open_ensure_dir(settings.DOC_TEX_DATA, 'w') as output_file:
                 pickle.dump(output_tex, output_file, 0)
     else:
-        print '\nFAILED'
+        print('\nFAILED')
         return sys.exit(1)      # Travis-CI knows the tests have failed
 
 
 def write_latex():
-    print "Load data"
+    print("Load data")
     with open_ensure_dir(settings.DOC_TEX_DATA, 'r') as output_file:
         output_tex = pickle.load(output_file)
 
-    print 'Print documentation'
+    print('Print documentation')
     with open_ensure_dir(settings.DOC_LATEX_FILE, 'w') as doc:
         content = documentation.latex(output_tex)
         content = content.encode('utf-8')

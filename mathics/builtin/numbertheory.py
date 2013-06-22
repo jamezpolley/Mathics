@@ -374,7 +374,6 @@ class PrimeQ(Builtin):
         while True:
             evaluation.check_stopped()
             result = n.is_prime(count)
-            print result, count
             if result == 0:
                 return Symbol('False')
             elif result == 2:

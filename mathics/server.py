@@ -18,6 +18,8 @@ u"""
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from __future__ import print_function
+
 import sys
 import os
 import argparse
@@ -30,10 +32,10 @@ def main():
     # Check for the database
     database_file = mathics_settings.DATABASES['default']['NAME']
     if not os.path.exists(database_file):
-        print "Error: Mathics database not found!"
-        print "Please change to the mathics install directory and run:\n"
-        print "   $> python setup.py initialize\n"
-        print "as the current user"
+        print("Error: Mathics database not found!")
+        print("Please change to the mathics install directory and run:\n")
+        print("   $> python setup.py initialize\n")
+        print("as the current user")
         sys.exit(-1)
 
     os.environ['DJANGO_SETTINGS_MODULE'] = 'mathics.settings'
@@ -77,10 +79,10 @@ def main():
     if not args.quiet:
         print_version(is_server=True)
         print_license()
-        print u"Quit by pressing %s\n" % quit_command
+        print(u"Quit by pressing {0}\n".format(quit_command))
 
-        print u"""Open the graphical user interface at
-http://localhost:%d\n in Firefox, Chrome, or Safari to use Mathics\n""" % port
+        print(u"Open the graphical user interface at http://localhost:{0}\n"
+              u" in Firefox, Chrome, or Safari to use Mathics\n".format(port))
 
     if args.external:
         addr = '0.0.0.0'
@@ -111,7 +113,7 @@ http://localhost:%d\n in Firefox, Chrome, or Safari to use Mathics\n""" % port
         # Need to use an OS exit because sys.exit doesn't work in a thread
         os._exit(1)
     except KeyboardInterrupt:
-        print "\nGoodbye!\n"
+        print("\nGoodbye!\n")
         sys.exit(0)
 
 if __name__ == '__main__':

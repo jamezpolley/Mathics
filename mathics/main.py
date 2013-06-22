@@ -186,7 +186,9 @@ def main():
         print(u"Quit by pressing {0}\n".format(quit_command))
 
     if args.execute:
-        total_input = args.execute.decode(sys.stdin.encoding)  # check encoding
+        total_input = args.execute
+        if sys.version_info[0] == 2:
+            total_input = total_input.decode(sys.stdin.encoding)
         print(shell.get_in_prompt() + total_input)
         shell.evaluate(total_input)
         return
@@ -195,11 +197,12 @@ def main():
         total_input = ''
         for line_no, line in enumerate(args.FILE):
             try:
-                line = line.decode('utf-8')     # TODO: other encodings
+                if sys.version_info[0] == 2:
+                    line = line.decode('utf-8')     # TODO: other encodings
                 if args.script and line_no == 0 and line.startswith('#!'):
                     continue
                 print(shell.get_in_prompt(continued=total_input != '') + line,
-                      end=' ')
+                      end='')
                 total_input += ' ' + line
                 if line != "" and wait_for_line(total_input):
                     continue
@@ -217,7 +220,8 @@ def main():
     while True:
         try:
             line = raw_input(shell.get_in_prompt(continued=total_input != ''))
-            line = line.decode(sys.stdin.encoding)
+            if sys.version_info[0] == 2:
+                line = line.decode(sys.stdin.encoding)
             total_input += line
             if line != "" and wait_for_line(total_input):
                 continue

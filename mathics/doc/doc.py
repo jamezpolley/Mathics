@@ -21,6 +21,7 @@ u"""
 from __future__ import with_statement
 
 import re
+import sys
 from os import listdir, path
 import pickle
 
@@ -569,7 +570,9 @@ class Documentation(DocElement):
             if part_title.endswith('.mdoc'):
                 part_title = part_title[:-len('.mdoc')]
                 part = DocPart(self, part_title)
-                text = open(dir + file, 'r').read().decode('utf8')
+                text = open(dir + file, 'r').read()
+                if sys.version_info[0] == 2:
+                    text = text.decode('utf8')
                 text = filter_comments(text)
                 chapters = CHAPTER_RE.findall(text)
                 for title, text in chapters:

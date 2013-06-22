@@ -212,7 +212,8 @@ def write_latex():
     print('Print documentation')
     with open_ensure_dir(settings.DOC_LATEX_FILE, 'w') as doc:
         content = documentation.latex(output_tex)
-        content = content.encode('utf-8')
+        if sys.version_info[0] == 2:
+            content = content.encode('utf-8')
         doc.write(content)
 
 

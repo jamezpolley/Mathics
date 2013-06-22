@@ -18,6 +18,7 @@ u"""
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import sys
 import sympy
 import mpmath
 import re
@@ -1197,7 +1198,12 @@ class Symbol(Atom):
         builtin = mathics_to_sympy.get(self.name)
         if (builtin is None or not builtin.sympy_name or    # nopep8
             not builtin.is_constant()):
-            return sympy.Symbol(sympy_symbol_prefix + self.name.encode('utf8'))
+
+
+            if sys.version_info[0] == 2:
+                return sympy.Symbol(sympy_symbol_prefix + self.name.encode('utf8'))
+            else:
+                return sympy.Symbol(sympy_symbol_prefix + self.name)
         else:
             return getattr(sympy, builtin.sympy_name)
 

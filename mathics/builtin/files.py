@@ -7,6 +7,7 @@ File Operations
 from __future__ import with_statement, print_function
 import os
 import io
+import sys
 import shutil
 import hashlib
 import zlib
@@ -1053,7 +1054,6 @@ class Put(BinaryOperator):
         text = [evaluation.format_output(Expression(
             'InputForm', expr)) for expr in exprs.get_sequence()]
         text = u'\n'.join(text) + u'\n'
-        text.encode('ascii')
 
         stream.write(text)
 
@@ -1138,7 +1138,6 @@ class PutAppend(BinaryOperator):
         text = [unicode(e.do_format(
             evaluation, 'OutputForm').__str__()) for e in exprs.get_sequence()]
         text = u'\n'.join(text) + u'\n'
-        text.encode('ascii')
 
         stream.write(text)
 
@@ -2326,13 +2325,15 @@ class Compress(Builtin):
         'Compress[expr_, OptionsPattern[Compress]]'
 
         string = expr.do_format(evaluation, 'FullForm').__str__()
-        string = string.encode('utf-8')
 
         # TODO Implement other Methods
-        result = zlib.compress(string)
-        result = base64.encodestring(result)
-
-        return from_python(result)
+        if sys.version_info[0] == 2:
+            string = string.encode('utf-8')
+            result = zlib.compress(string)
+            result = base64.encodestring(result)
+            return String(result)
+        else:
+            return string.encode('zlib').encode('base64')
 
 
 class Uncompress(Builtin):
@@ -2357,16 +2358,19 @@ class Uncompress(Builtin):
 
     def apply(self, string, evaluation):
         'Uncompress[string_?StringQ]'
-        string = string.to_python()[1:-1]
-        string = base64.decodestring(string)
-        tmp = zlib.decompress(string)
-        tmp = tmp.decode('utf-8')
+        string = string.get_string_value()
+        if sys.version_info[0] == 2:
+            string = base64.decodestring(string)
+            string = zlib.decompress(string)
+            string = string.decode('utf-8')
+        else:
+            string.decode('base64').decode('zlib')
 
         try:
-            expr = parse(tmp)
+            expr = parse(string)
         except NameError:
             from mathics.core.parser import parse
-            expr = parse(tmp)
+            expr = parse(string)
 
         return expr
 

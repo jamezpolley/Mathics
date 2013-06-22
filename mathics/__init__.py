@@ -6,7 +6,6 @@ import sys
 #writer = codecs.getwriter("utf-8")
 #sys.stdout = writer(sys.stdout)
 
-
 def get_version():
     version = {}
 
@@ -36,11 +35,13 @@ def get_version_string(is_server, newlines=False):
     result = []
     result.append(u"Mathics {0}".format(version['mathics']))
     result.append(u"on {0}".format(version['python']))
-    libs = []
-    if 'django' in version and is_server:
-        libs.append("Django %s" % version['django'])
-    libs += ["SymPy %s" % version['sympy'], "mpmath %s" % version['mpmath']]
-    result.append(u"using %s" % ", ".join(libs))
+    result.append(u"using {0}".format(", ".join([
+        "Django {0}".format(version['django']) if (
+            'django' in version and is_server) else '',
+        "SymPy {0}".format(version['sympy']),
+        "mpmath {0}".format(version['mpmath'])
+    ])))
+
     return ("\n" if newlines else " ").join(result)
 
 

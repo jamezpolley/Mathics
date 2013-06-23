@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 
-u"""
+"""
     Mathics: a general-purpose computer algebra system
     Copyright (C) 2011-2013 The Mathics Team
 
@@ -18,7 +18,7 @@ u"""
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 import re
 
@@ -193,4 +193,4 @@ def unicode_superscript(value):
         else:
             value = ord(c)
         return unichr(value)
-    return u''.join(repl_char(c) for c in value)
+    return ''.join(repl_char(c) for c in value)

@@ -619,7 +619,7 @@ class Documentation(DocElement):
                 test.key = (
                     tests.part, tests.chapter, tests.section, test.index)
 
-    def __str__(self):
+    def __unicode__(self):
         return '\n\n\n'.join(str(part) for part in self.parts)
 
     def get_tests(self):
@@ -705,7 +705,7 @@ class DocPart(DocElement):
         self.is_appendix = False
         doc.parts_by_slug[self.slug] = self
 
-    def __str__(self):
+    def __unicode__(self):
         return '%s\n\n%s' % (
             self.title, '\n'.join(str(chapter) for chapter in self.chapters))
 
@@ -734,7 +734,7 @@ class DocChapter(DocElement):
         self.sections_by_slug = {}
         part.chapters_by_slug[self.slug] = self
 
-    def __str__(self):
+    def __unicode__(self):
         return '= %s =\n\n%s' % (
             self.title, '\n'.join(str(section) for section in self.sections))
 
@@ -769,7 +769,7 @@ class DocSection(DocElement):
         self.operator = operator
         chapter.sections_by_slug[self.slug] = self
 
-    def __str__(self):
+    def __unicode__(self):
         return '== %s ==\n%s' % (self.title, self.doc)
 
     def latex(self, output):
@@ -837,7 +837,7 @@ class Doc(object):
                 self.items.append(tests)
                 tests = None
 
-    def __str__(self):
+    def __unicode__(self):
         return '\n'.join(str(item) for item in self.items)
 
     def get_tests(self):
@@ -866,7 +866,7 @@ class DocText(object):
     def is_private(self):
         return False
 
-    def __str__(self):
+    def __unicode__(self):
         return self.text
 
     def latex(self, output):
@@ -890,7 +890,7 @@ class DocTests(object):
     def is_private(self):
         return all(test.private for test in self.tests)
 
-    def __str__(self):
+    def __unicode__(self):
         return '\n'.join(str(test) for test in self.tests)
 
     def latex(self, output):
@@ -942,7 +942,7 @@ class DocTest(object):
                         out = Print(text)
                     self.outs.append(out)
 
-    def __str__(self):
+    def __unicode__(self):
         return self.test
 
     def latex(self, output):

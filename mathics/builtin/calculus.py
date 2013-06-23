@@ -304,7 +304,7 @@ class Derivative(PostfixOperator, SympyFunction):
 
         # sympy<=0.7.2 isinstance(..., str) bug
         sym_func = sympy.Function(str(
-            sympy_symbol_prefix + func.__str__()))(sym_x)
+            sympy_symbol_prefix + unicode(func)))(sym_x)
 
         count = exprs[2].leaves[0].to_python()
         for i in range(count):

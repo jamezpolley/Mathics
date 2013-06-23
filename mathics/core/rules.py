@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 
-u"""
+"""
     Mathics: a general-purpose computer algebra system
     Copyright (C) 2011-2013 The Mathics Team
 

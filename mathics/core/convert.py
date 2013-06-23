@@ -5,7 +5,9 @@ Converts expressions from SymPy to Mathics expressions.
 Conversion to SymPy is handled directly in BaseExpression descendants.
 """
 
-u"""
+from __future__ import unicode_literals
+
+"""
     Mathics: a general-purpose computer algebra system
     Copyright (C) 2011-2013 The Mathics Team
 
@@ -103,7 +105,8 @@ class SympyExpression(BasicSympy):
             return False
 
     def __str__(self):
-        return '%s[%s]' % (super(SympyExpression, self).__str__(), self.expr)
+        return '{0}[{1}]'.format(
+            unicode(super(SympyExpression, self)), self.expr)
 
 
 def from_sympy(expr):
@@ -216,8 +219,10 @@ def from_sympy(expr):
                 result.append(Integer(1))
         return Expression('Function', Expression('Plus', *result))
     elif isinstance(expr, sympy.Lambda):
-        vars = [sympy.Symbol('%s%d' % (sympy_slot_prefix, index + 1))
+        vars = [sympy.Symbol(str('{0}{1}'.format(sympy_slot_prefix,
+                                                 index + 1)))
                 for index in range(len(expr.variables))]
+        # sympy<=0.7.2 isinstance(..., str) bug
         return Expression('Function', from_sympy(expr(*vars)))
 
     elif expr.is_Function or isinstance(

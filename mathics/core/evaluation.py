@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 
-u"""
+"""
     Mathics: a general-purpose computer algebra system
     Copyright (C) 2011-2013 The Mathics Team
 
@@ -18,7 +18,7 @@ u"""
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 import threading
 import sys
@@ -105,7 +105,7 @@ class Message(Out):
         self.tag = tag
         self.text = text
 
-    def __str__(self):
+    def __unicode__(self):
         return ' : ' + self.text
 
     def __cmp__(self, other):
@@ -119,7 +119,7 @@ class Message(Out):
             'message': True,
             'symbol': self.symbol,
             'tag': self.tag,
-            'prefix': u'%s::%s' % (self.symbol, self.tag),
+            'prefix': '{0}::{1}'.format(self.symbol, self.tag),
             'text': self.text,
         }
 
@@ -130,7 +130,7 @@ class Print(Out):
         self.is_print = True
         self.text = text
 
-    def __str__(self):
+    def __unicode__(self):
         return ' | ' + self.text
 
     def __cmp__(self, other):

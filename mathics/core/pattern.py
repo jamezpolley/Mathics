@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 # cython: profile=False
 
-u"""
+"""
     Mathics: a general-purpose computer algebra system
     Copyright (C) 2011-2013 The Mathics Team
 
@@ -18,6 +18,8 @@ u"""
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+
+from __future__ import unicode_literals
 
 from mathics.core.expression import Expression
 from mathics.core.util import subsets, subranges, permutations
@@ -349,7 +351,7 @@ class ExpressionPattern(Pattern):
                 if leaf.get_head_name() == head_name]
 
     def __repr__(self):
-        return u'<ExpressionPattern: %s>' % self.expr
+        return '<ExpressionPattern: {0}>'.format(self.expr)
 
     def get_match_count(self, vars={}):
         return (1, 1)

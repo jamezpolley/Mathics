@@ -4,7 +4,7 @@
 File Operations
 """
 
-from __future__ import with_statement, print_function
+from __future__ import with_statement, print_function, unicode_literals
 import os
 import io
 import sys
@@ -581,10 +581,10 @@ class Read(Builtin):
         read_word = reader(stream, word_separators)
         read_record = reader(stream, record_separators)
         read_number = reader(stream, word_separators + record_separators,
-                             ['+', '-', '.'] + [str(i) for i in range(10)])
+                             ['+', '-', '.'] + map(unicode, range(10)))
         read_real = reader(
             stream, word_separators + record_separators,
-            ['+', '-', '.', 'e', 'E', '^', '*'] + [str(i) for i in range(10)])
+            ['+', '-', '.', 'e', 'E', '^', '*'] + map(unicode, range(10)))
         for typ in types:
             try:
                 if typ == 'Byte':
@@ -694,7 +694,7 @@ class Write(Builtin):
 
         evaluation.format = 'text'
         text = evaluation.format_output(from_python(expr))
-        stream.write(unicode(text) + u'\n')
+        stream.write(unicode(text) + '\n')
         return Symbol('Null')
 
 
@@ -1053,7 +1053,7 @@ class Put(BinaryOperator):
 
         text = [evaluation.format_output(Expression(
             'InputForm', expr)) for expr in exprs.get_sequence()]
-        text = u'\n'.join(text) + u'\n'
+        text = '\n'.join(text) + '\n'
 
         stream.write(text)
 
@@ -1135,9 +1135,9 @@ class PutAppend(BinaryOperator):
                 'OutputSteam', name, n))
             return
 
-        text = [unicode(e.do_format(
-            evaluation, 'OutputForm').__str__()) for e in exprs.get_sequence()]
-        text = u'\n'.join(text) + u'\n'
+        text = [unicode(e.do_format(evaluation, 'OutputForm'))
+                for e in exprs.get_sequence()]
+        text = '\n'.join(text) + '\n'
 
         stream.write(text)
 
@@ -2324,7 +2324,7 @@ class Compress(Builtin):
     def apply(self, expr, evaluation, options):
         'Compress[expr_, OptionsPattern[Compress]]'
 
-        string = expr.do_format(evaluation, 'FullForm').__str__()
+        string = unicode(expr.do_format(evaluation, 'FullForm'))
 
         # TODO Implement other Methods
         if sys.version_info[0] == 2:
@@ -3037,7 +3037,7 @@ class SetDirectory(Builtin):
             evaluation.message('SetDirectory', 'fstr', path)
             return
 
-        py_path = path.__str__()[1:-1]
+        py_path = path.get_string_value()
         py_path = path_search(py_path)
 
         if py_path is None:

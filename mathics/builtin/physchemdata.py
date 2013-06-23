@@ -4,6 +4,8 @@
 Physical and Chemical data
 """
 
+from __future__ import unicode_literals
+
 from csv import reader as csvreader
 
 from mathics.builtin.base import Builtin
@@ -12,7 +14,10 @@ from mathics.settings import ROOT_DIR
 
 def load_element_data():
     element_file = open(ROOT_DIR + 'data/element.csv', 'r')
-    reader = csvreader(element_file, delimiter='\t')
+
+    # apply str to delimiter here to fix unicode_literal bug
+    reader = csvreader(element_file, delimiter=str('\t'))
+
     element_data = []
     for row in reader:
         element_data.append([value for value in row])
@@ -121,14 +126,14 @@ class ElementData(Builtin):
             if not 1 <= py_n <= 118:
                 evaluation.message("ElementData", "noent", n)
                 return
-        elif isinstance(py_n, unicode):
+        elif isinstance(py_n, basestring):
             pass
         else:
             evaluation.message("ElementData", "noent", n)
             return
 
         # Check property specifier
-        if isinstance(py_prop, str) or isinstance(py_prop, unicode):
+        if isinstance(py_prop, basestring):
             py_prop = str(py_prop)
 
         if py_prop == '"Properties"':
@@ -138,7 +143,7 @@ class ElementData(Builtin):
                     result.append(_ELEMENT_DATA[0][i])
             return from_python(sorted(result))
 
-        if not (isinstance(py_prop, str) and
+        if not (isinstance(py_prop, basestring) and
                 py_prop[0] == py_prop[-1] == '"' and
                 py_prop.strip('"') in _ELEMENT_DATA[0]):
             evaluation.message("ElementData", "noprop", prop)

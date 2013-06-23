@@ -4,6 +4,8 @@
 Linear algebra
 """
 
+from __future__ import unicode_literals
+
 import sympy
 
 from mathics.builtin.base import Builtin
@@ -29,7 +31,7 @@ def to_sympy_matrix(data, **kwargs):
 
 
 class Det(Builtin):
-    u"""
+    """
     <dl>
     <dt>'Det[$m$]'
         <dd>computes the determinant of the matrix $m$.
@@ -124,7 +126,8 @@ class LinearSolve(Builtin):
         system = to_sympy_matrix(system)
         if system is None:
             return
-        syms = [sympy.Dummy('LinearSolve_var%d' % k)
+        # sympy<=0.7.2 isinstance(..., str) bug
+        syms = [sympy.Dummy(str('LinearSolve_var{0}'.format(k)))
                 for k in range(system.cols - 1)]
         sol = sympy.solve_linear_system(system, *syms)
         if sol:

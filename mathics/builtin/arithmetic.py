@@ -6,7 +6,7 @@ Arithmetic functions
 Basic arithmetic functions, including complex number arithmetic.
 """
 
-from __future__ import with_statement
+from __future__ import with_statement, unicode_literals
 
 import mpmath
 import sympy
@@ -64,7 +64,7 @@ class _MPMathFunction(SympyFunction):
                     result = self.eval(*mpmath_args)
                     result = from_sympy(mpmath2sympy(result, prec))
                 except ValueError, exc:
-                    text = str(exc)
+                    text = unicode(exc)
                     if text == 'gamma function pole':
                         return Symbol('ComplexInfinity')
                     else:
@@ -464,7 +464,7 @@ class Times(BinaryOperator, SympyFunction):
     formats = {
     }
 
-    def format_times(self, items, evaluation, op=u'\u2062'):
+    def format_times(self, items, evaluation, op='\u2062'):
         'Times[items__]'
 
         def inverse(item):
@@ -838,10 +838,10 @@ class Power(BinaryOperator, SympyFunction):
                     mp_y = sympy2mpmath(y.to_sympy())
                     result = mp_x ** mp_y
                     if isinstance(result, mpmath.mpf):
-                        return Real(str(result), prec)
+                        return Real(unicode(result), prec)
                     elif isinstance(result, mpmath.mpc):
-                        return Complex(str(result.real),
-                                       str(result.imag), prec)
+                        return Complex(unicode(result.real),
+                                       unicode(result.imag), prec)
             except ZeroDivisionError:
                 evaluation.message('Power', 'infy')
                 return Symbol('ComplexInfinity')
@@ -1245,7 +1245,7 @@ class Integer_(Builtin):
 
 
 class Real_(Builtin):
-    u"""
+    """
     <dl>
     <dt>'Real'
         <dd>is the head of real (inexact) numbers.

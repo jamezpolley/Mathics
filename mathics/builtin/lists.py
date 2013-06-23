@@ -4,6 +4,8 @@
 List functions
 """
 
+from __future__ import unicode_literals
+
 from mathics.builtin.base import (
     Builtin, Test, InvalidLevelspecError,
     PartError, PartDepthError, PartRangeError, SympyFunction)
@@ -639,7 +641,7 @@ class Part(Builtin):
         if f.get_name() in ('OutputForm', 'InputForm'):
             open, close = "[[", "]]"
         else:
-            open, close = u"\u301a", u"\u301b"
+            open, close = "\u301a", "\u301b"
         indices = list_boxes(i, f, open, close)
         result = Expression('RowBox', Expression('List', list, *indices))
         return result
@@ -721,7 +723,7 @@ class Extract(Builtin):
 
     rules = {
         'Extract[expr_, list_List]': 'Part[expr, Sequence @@ list]',
-        'Extract[expr_, {lists___List}]': u'Extract[expr, #]& /@ {lists}',
+        'Extract[expr_, {lists___List}]': 'Extract[expr, #]& /@ {lists}',
     }
 
 

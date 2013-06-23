@@ -4,6 +4,8 @@
 Differential equation solver functions
 """
 
+from __future__ import unicode_literals
+
 import sympy
 from mathics.builtin.base import Builtin
 from mathics.core.expression import Expression
@@ -111,7 +113,9 @@ class DSolve(Builtin):
         eqn = Expression('Plus', left, Expression(
             'Times', -1, right)).evaluate(evaluation)
 
-        sym_eq = eqn.to_sympy(converted_functions=set([func.get_head_name()]))
+        # sympy<=0.7.2 isinstance(..., str) bug
+        sym_eq = eqn.to_sympy(
+            converted_functions=set([str(func.get_head_name())]))
         sym_x = sympy.symbols(str(sympy_symbol_prefix + x.name))
         sym_func = sympy.Function(str(
             sympy_symbol_prefix + func.get_head_name()))(sym_x)
@@ -120,7 +124,8 @@ class DSolve(Builtin):
             sym_result = sympy.dsolve(sym_eq, sym_func)
             if not isinstance(sym_result, list):
                 sym_result = [sym_result]
-        except ValueError:
+        except ValueError as e:
+            print e
             evaluation.message('DSolve', 'symimp')
             return
         except NotImplementedError:

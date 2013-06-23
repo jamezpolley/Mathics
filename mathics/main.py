@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 
-u"""
+"""
     Mathics: a general-purpose computer algebra system
     Copyright (C) 2011-2013 The Mathics Team
 
@@ -18,7 +18,7 @@ u"""
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 import sys
 import argparse
@@ -183,7 +183,7 @@ def main():
     if not (args.quiet or args.script):
         print_version(is_server=False)
         print_license()
-        print(u"Quit by pressing {0}\n".format(quit_command))
+        print("Quit by pressing {0}\n".format(quit_command))
 
     if args.execute:
         total_input = args.execute

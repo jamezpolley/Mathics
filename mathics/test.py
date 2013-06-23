@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 
-u"""
+"""
     Mathics: a general-purpose computer algebra system
     Copyright (C) 2011-2013 The Mathics Team
 
@@ -18,7 +18,7 @@ u"""
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from __future__ import with_statement, print_function
+from __future__ import with_statement, print_function, unicode_literals
 
 import sys
 import re
@@ -62,7 +62,7 @@ def test_case(test, tests, index=0, quiet=False):
     part, chapter, section = tests.part, tests.chapter, tests.section
 
     def fail(why):
-        print(u"{0}Test failed: {1} in {2} / {3}\n{4}\n{5}\n".format(
+        print("{0}Test failed: {1} in {2} / {3}\n{4}\n{5}\n".format(
             sep, section, part, chapter, test, why))
         return False
 
@@ -71,21 +71,21 @@ def test_case(test, tests, index=0, quiet=False):
     try:
         evaluation = Evaluation(test, definitions, catch_interrupt=False)
     except Exception, exc:
-        fail(u"Exception %s" % exc)
+        fail("Exception %s" % exc)
         info = sys.exc_info()
         sys.excepthook(*info)
         return False
 
     if evaluation.results:
         if len(evaluation.results) > 1:
-            return fail(u"Too many results: %s" % evaluation.results)
+            return fail("Too many results: %s" % evaluation.results)
         result = evaluation.results[0].result
         out = evaluation.results[0].out
     else:
         result = None
         out = []
     if not compare(result, wanted):
-        return fail(u"Result: %s\nWanted: %s" % (result, wanted))
+        return fail("Result: %s\nWanted: %s" % (result, wanted))
     output_ok = True
     if len(out) != len(wanted_out):
         output_ok = False
@@ -95,9 +95,9 @@ def test_case(test, tests, index=0, quiet=False):
                 output_ok = False
                 break
     if not output_ok:
-        return fail(u"Output:\n%s\nWanted:\n%s" % (
-            u'\n'.join(unicode(o) for o in out),
-            u'\n'.join(unicode(o) for o in wanted_out)))
+        return fail("Output:\n%s\nWanted:\n%s" % (
+            '\n'.join(unicode(o) for o in out),
+            '\n'.join(unicode(o) for o in wanted_out)))
     return True
 
 

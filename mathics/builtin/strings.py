@@ -4,6 +4,8 @@
 String functions
 """
 
+from __future__ import unicode_literals
+
 from mathics.builtin.base import BinaryOperator, Builtin, Test
 from mathics.core.expression import (Expression, Symbol, String, Integer,
                                      from_python)
@@ -89,7 +91,7 @@ class StringSplit(Builtin):
 
         for py_sep in py_seps:
             result = [t for s in result for t in s.split(py_sep)]
-        return from_python(filter(lambda x: x != u'', result))
+        return from_python(filter(lambda x: x != '', result))
 
     def apply_single(self, string, sep, evaluation):
         'StringSplit[string_String, sep_?NotListQ]'
@@ -103,7 +105,7 @@ class StringSplit(Builtin):
         'StringSplit[string_String]'
         py_string = string.get_string_value()
         result = py_string.split()
-        return from_python(filter(lambda x: x != u'', result))
+        return from_python(filter(lambda x: x != '', result))
 
     def apply_strse1(self, x, evaluation):
         'StringSplit[x_/;Not[StringQ[x]]]'
@@ -300,7 +302,7 @@ class StringReplace(Builtin):
 
 
 class Characters(Builtin):
-    u"""
+    """
     >> Characters["abc"]
      = {a, b, c}
 

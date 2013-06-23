@@ -4,6 +4,8 @@
 Input and Output
 """
 
+from __future__ import unicode_literals
+
 import re
 
 from mathics.builtin.base import (
@@ -1067,7 +1069,7 @@ class FullForm(Builtin):
 
 
 class StandardForm(Builtin):
-    u"""
+    """
     >> StandardForm[a + b * c]
      = a + b c
     >> StandardForm["A string"]
@@ -1148,7 +1150,7 @@ class TeXForm(Builtin):
             # Replace multiple newlines by a single one e.g. between asy-blocks
             tex = MULTI_NEWLINE_RE.sub('\n', tex)
 
-            tex = tex.replace(u' \uF74c', u' \, d')  # tmp hack for Integrate
+            tex = tex.replace(' \uF74c', ' \, d')  # tmp hack for Integrate
         except BoxError:
             evaluation.message('General', 'notboxes', String('%s' % boxes))
             tex = ''

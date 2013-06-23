@@ -468,6 +468,7 @@ class Expression(BaseExpression):
             functions = kwargs['converted_functions']
             if len(self.leaves) > 0 and self.get_head_name() in functions:
                 sym_args = [leaf.to_sympy() for leaf in self.leaves]
+                # sympy<=0.7.2 isinstance(..., name) bug
                 func = sympy.Function(str(
                     sympy_symbol_prefix + self.get_head_name()))(*sym_args)
                 return func

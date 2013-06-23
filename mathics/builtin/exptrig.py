@@ -8,7 +8,7 @@ Numerical values and derivatives can be computed; however, most special exact va
 rules are not implemented yet.
 """
 
-from __future__ import with_statement
+from __future__ import with_statement, unicode_literals
 
 import sympy
 
@@ -21,7 +21,7 @@ from mathics.builtin.arithmetic import _MPMathFunction
 
 
 class Pi(SympyConstant):
-    u"""
+    """
     <dl>
     <dt>'Pi'
         <dd>is the constant π.

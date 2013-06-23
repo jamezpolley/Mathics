@@ -100,8 +100,9 @@ class RSolve(Builtin):
         relation = Expression('Plus', left, Expression(
             'Times', -1, right)).evaluate(evaluation)
 
+        # sympy<=0.7.2 isinstance(..., str) bug
         sym_eq = relation.to_sympy(
-            converted_functions=set([func.get_head_name()]))
+            converted_functions=set([str(func.get_head_name())]))
         sym_n = sympy.symbols(str(sympy_symbol_prefix + n.name))
         sym_func = sympy.Function(str(
             sympy_symbol_prefix + func.get_head_name()))(sym_n)

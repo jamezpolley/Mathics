@@ -4,6 +4,8 @@
 Special functions
 """
 
+from __future__ import unicode_literals
+
 import mpmath
 
 from mathics.builtin.base import Builtin
@@ -694,7 +696,7 @@ class JacobiP(_MPMathFunction):
 
 
 class SphericalHarmonicY(_MPMathFunction):
-    u"""
+    """
     <dl>
     <dt>'SphericalHarmonicY[$l$, $m$, \u0275, \u03D5]'
       <dd>returns the spherical harmonic functin Y_$l$^$m$(\u0257, \u03D5).

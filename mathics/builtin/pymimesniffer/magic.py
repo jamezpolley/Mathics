@@ -26,7 +26,7 @@ class MagicDetector(object):
     def match(self, filename, data=None):
         if not data:
             file = open(filename, 'r')
-        elif isinstance(data, str) or isinstance(data, unicode):
+        elif isinstance(data, basestring):
             from StringIO import StringIO
 
             file = StringIO(data)

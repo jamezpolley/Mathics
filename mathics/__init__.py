@@ -1,7 +1,9 @@
 # -*- coding: utf8 -*-
 
-# force utf8 encoding
+from __future__ import unicode_literals
 import sys
+
+# force utf8 encoding
 #import codecs
 #writer = codecs.getwriter("utf-8")
 #sys.stdout = writer(sys.stdout)
@@ -33,9 +35,9 @@ def get_version():
 def get_version_string(is_server, newlines=False):
     version = get_version()
     result = []
-    result.append(u"Mathics {0}".format(version['mathics']))
-    result.append(u"on {0}".format(version['python']))
-    result.append(u"using {0}".format(", ".join([
+    result.append("Mathics {0}".format(version['mathics']))
+    result.append("on {0}".format(version['python']))
+    result.append("using {0}".format(", ".join([
         "Django {0}".format(version['django']) if (
             'django' in version and is_server) else '',
         "SymPy {0}".format(version['sympy']),
@@ -50,7 +52,7 @@ def print_version(is_server):
 
 
 def print_license():
-    print(u"""
+    print("""
 Copyright (C) 2011-2013 The Mathics Team.
 This program comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it

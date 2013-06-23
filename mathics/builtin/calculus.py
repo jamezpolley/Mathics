@@ -4,6 +4,8 @@
 Calculus functions
 """
 
+from __future__ import unicode_literals
+
 from mathics.builtin.base import Builtin, PostfixOperator, SympyFunction
 from mathics.core.expression import Expression, Integer, Number
 from mathics.core.convert import (
@@ -15,7 +17,7 @@ import sympy
 
 
 class D(SympyFunction):
-    u"""
+    """
     <dl>
     <dt>'D[$f$, $x$]'
         <dd>gives the partial derivative of $f$ with respect to $x$.
@@ -164,7 +166,7 @@ class D(SympyFunction):
 
 
 class Derivative(PostfixOperator, SympyFunction):
-    u"""
+    """
     <dl>
     <dt>'Derivative[$n$][$f$]'
         <dd>represents the $n$th derivative of the function $f$.
@@ -299,6 +301,8 @@ class Derivative(PostfixOperator, SympyFunction):
 
         sym_x = exprs[0].leaves[0].to_sympy()
         func = exprs[1].leaves[0]
+
+        # sympy<=0.7.2 isinstance(..., str) bug
         sym_func = sympy.Function(str(
             sympy_symbol_prefix + func.__str__()))(sym_x)
 
@@ -726,7 +730,7 @@ class Solve(Builtin):
         except NotImplementedError:
             pass
         except TypeError, exc:
-            if str(exc).startswith("expected Symbol, Function or Derivative"):
+            if unicode(exc).startswith("expected Symbol, Function or Derivative"):
                 evaluation.message('Solve', 'ivar', vars_original)
 
 

@@ -51,7 +51,7 @@ class RecursionLimit(Predefined):
     set_recursionlimit(value)
 
     rules = {
-        '$RecursionLimit': str(value),
+        '$RecursionLimit': unicode(value),
     }
 
     messages = {
@@ -63,7 +63,7 @@ class RecursionLimit(Predefined):
     }
 
     rules = {
-        '$RecursionLimit': str(value),
+        '$RecursionLimit': unicode(value),
     }
 
     def evaluate(self, evaluation):

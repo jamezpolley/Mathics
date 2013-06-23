@@ -4,6 +4,8 @@
 Date and Time
 """
 
+from __future__ import unicode_literals
+
 import time
 from datetime import datetime, timedelta
 import dateutil.parser
@@ -140,7 +142,7 @@ class DateStringFormat(Predefined):
 
     name = '$DateStringFormat'
 
-    value = u'DateTimeShort'
+    value = 'DateTimeShort'
 
     # TODO: Methods to change this
 
@@ -198,9 +200,9 @@ class _DateFormat(Builtin):
             if (isinstance(etime[0], basestring) and    # noqa
                 isinstance(etime[1], list) and
                 all(isinstance(s, basestring) for s in etime[1])):
-                is_spec = [str(s).strip(
+                is_spec = [unicode(s).strip(
                     '"') in DATE_STRING_FORMATS.keys() for s in etime[1]]
-                etime[1] = map(lambda s: str(s).strip('"'), etime[1])
+                etime[1] = map(lambda s: unicode(s).strip('"'), etime[1])
 
                 if sum(is_spec) == len(is_spec):
                     forms = []
@@ -221,7 +223,7 @@ class _DateFormat(Builtin):
                 for form in forms:
                     try:
                         date.date = datetime.strptime(
-                            str(etime[0]).strip('"'), form)
+                            unicode(etime[0]).strip('"'), form)
                         break
                     except ValueError:
                         pass
@@ -411,18 +413,17 @@ class DateString(_DateFormat):
 
         pyform = map(lambda x: x.strip('"'), pyform)
 
-        if not all(isinstance(f, unicode) or isinstance(f, str)
-                   for f in pyform):
+        if not all(isinstance(f, basestring) for f in pyform):
             evaluation.message('DateString', 'fmt', form)
             return
 
         datestrs = []
         for p in pyform:
-            if str(p) in DATE_STRING_FORMATS.keys():
+            if unicode(p) in DATE_STRING_FORMATS.keys():
                 # FIXME: Years 1900 before raise an error
                 tmp = date.date.strftime(DATE_STRING_FORMATS[p])
-                if str(p).endswith("Short") and str(p) != "YearShort":
-                    if str(p) == "DateTimeShort":
+                if unicode(p).endswith("Short") and unicode(p) != "YearShort":
+                    if unicode(p) == "DateTimeShort":
                         tmp = tmp.split(' ')
                         tmp = ' '.join(map(lambda s: s.lstrip(
                             '0'), tmp[:-1]) + [tmp[-1]])
@@ -430,7 +431,7 @@ class DateString(_DateFormat):
                         tmp = ' '.join(map(lambda s: s.lstrip(
                             '0'), tmp.split(' ')))
             else:
-                tmp = str(p)
+                tmp = unicode(p)
 
             datestrs.append(tmp)
 
@@ -658,9 +659,9 @@ class DatePlus(Builtin):
         # Process offset
         pyoff = off.to_python()
         if isinstance(pyoff, float) or isinstance(pyoff, int):
-            pyoff = [[pyoff, u'"Day"']]
+            pyoff = [[pyoff, '"Day"']]
         elif (isinstance(pyoff, list) and len(pyoff) == 2 and
-              isinstance(pyoff[1], unicode)):
+              isinstance(pyoff[1], basestring)):
             pyoff = [pyoff]
 
         # Strip " marks

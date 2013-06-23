@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 
-u"""
+"""
     Mathics: a general-purpose computer algebra system
     Copyright (C) 2011-2013 The Mathics Team
 
@@ -17,6 +17,8 @@ u"""
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+
+from __future__ import unicode_literals
 
 import pkg_resources
 import sys
@@ -49,7 +51,7 @@ MAX_RECURSION_DEPTH = 512
 MACHINE_PRECISION = 64
 
 ADMINS = (
-    (u'Admin', 'mail@test.com'),
+    ('Admin', 'mail@test.com'),
 )
 MANAGERS = ADMINS
 

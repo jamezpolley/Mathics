@@ -70,7 +70,7 @@ def test_case(test, tests, index=0, quiet=False):
         print('{0:4d}. TEST {1}'.format(index, test))
     try:
         evaluation = Evaluation(test, definitions, catch_interrupt=False)
-    except Exception, exc:
+    except Exception as exc:
         fail("Exception %s" % exc)
         info = sys.exc_info()
         sys.excepthook(*info)

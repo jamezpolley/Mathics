@@ -98,7 +98,7 @@ def main():
                 get_internal_wsgi_application)
             handler = get_internal_wsgi_application()
         run(addr, port, handler)
-    except WSGIServerException, e:
+    except WSGIServerException as e:
         # Use helpful error messages instead of ugly tracebacks.
         ERRORS = {
             13: "You don't have permission to access that port.",

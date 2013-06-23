@@ -96,6 +96,8 @@ class Out(object):
         self.is_print = False
         self.text = ''
 
+    def __eq__(self, other):
+        return self.is_message == other.is_message and self.text == other.text
 
 class Message(Out):
     def __init__(self, symbol, tag, text):
@@ -107,12 +109,6 @@ class Message(Out):
 
     def __unicode__(self):
         return ' : ' + self.text
-
-    def __cmp__(self, other):
-        if self.is_message == other.is_message and self.text == other.text:
-            return 0
-        else:
-            return 1
 
     def get_data(self):
         return {
@@ -132,12 +128,6 @@ class Print(Out):
 
     def __unicode__(self):
         return ' | ' + self.text
-
-    def __cmp__(self, other):
-        if self.is_message == other.is_message and self.text == other.text:
-            return 0
-        else:
-            return 1
 
     def get_data(self):
         return {

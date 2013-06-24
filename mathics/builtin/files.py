@@ -5,6 +5,7 @@ File Operations
 """
 
 from __future__ import with_statement, print_function, unicode_literals
+
 import os
 import io
 import sys
@@ -14,6 +15,7 @@ import zlib
 import base64
 import tempfile
 import time
+import string
 
 from mathics.core.expression import Expression, String, Symbol, from_python
 from mathics.builtin.base import (Builtin, Predefined, BinaryOperator,
@@ -581,10 +583,10 @@ class Read(Builtin):
         read_word = reader(stream, word_separators)
         read_record = reader(stream, record_separators)
         read_number = reader(stream, word_separators + record_separators,
-                             ['+', '-', '.'] + map(unicode, range(10)))
+                             ['+', '-', '.'] + list(string.digits))
         read_real = reader(
             stream, word_separators + record_separators,
-            ['+', '-', '.', 'e', 'E', '^', '*'] + map(unicode, range(10)))
+            ['+', '-', '.', 'e', 'E', '^', '*'] + list(string.digits))
         for typ in types:
             try:
                 if typ == 'Byte':
@@ -694,7 +696,7 @@ class Write(Builtin):
 
         evaluation.format = 'text'
         text = evaluation.format_output(from_python(expr))
-        stream.write(unicode(text) + '\n')
+        stream.write('{0}\n'.format(text))
         return Symbol('Null')
 
 
@@ -745,7 +747,7 @@ class WriteString(Builtin):
                 return
 
         text = map(lambda x: x.to_python()[1:-1], exprs)
-        text = unicode(''.join(text))
+        text = ''.join(text)
         stream.write(text)
         return Symbol('Null')
 
@@ -1135,7 +1137,7 @@ class PutAppend(BinaryOperator):
                 'OutputSteam', name, n))
             return
 
-        text = [unicode(e.do_format(evaluation, 'OutputForm'))
+        text = ['{0}'.format(e.do_format(evaluation, 'OutputForm'))
                 for e in exprs.get_sequence()]
         text = '\n'.join(text) + '\n'
 
@@ -2264,9 +2266,9 @@ class StringToStream(Builtin):
     attributes = ('Protected')
 
     def apply(self, string, evaluation):
-        'StringToStream[string_]'
-        pystring = string.to_python()[1:-1]
-        stream = io.StringIO(unicode(pystring))
+        'StringToStream[string_String]'
+        pystring = '{0}'.format(string.get_string_value())
+        stream = io.StringIO(pystring)
         n = _put_stream(stream)
         result = Expression('InputStream', from_python('String'), n)
 
@@ -2324,7 +2326,7 @@ class Compress(Builtin):
     def apply(self, expr, evaluation, options):
         'Compress[expr_, OptionsPattern[Compress]]'
 
-        string = unicode(expr.do_format(evaluation, 'FullForm'))
+        string = '{0}'.format(expr.do_format(evaluation, 'FullForm'))
 
         # TODO Implement other Methods
         if sys.version_info[0] == 2:

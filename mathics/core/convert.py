@@ -105,8 +105,7 @@ class SympyExpression(BasicSympy):
             return False
 
     def __str__(self):
-        return '{0}[{1}]'.format(
-            unicode(super(SympyExpression, self)), self.expr)
+        return '{0}[{1}]'.format(super(SympyExpression, self), self.expr)
 
 
 def from_sympy(expr):
@@ -131,7 +130,7 @@ def from_sympy(expr):
     if expr.is_Atom:
         name = None
         if expr.is_Symbol:
-            name = unicode(expr)
+            name = '{0}'.format(expr)
             if isinstance(expr, symbol.Dummy):
                 name = name + ('__Dummy_%d' % expr.dummy_index)
                 return Symbol(name, sympy_dummy=expr)
@@ -145,7 +144,7 @@ def from_sympy(expr):
                 index = name[len(sympy_slot_prefix):]
                 return Expression('Slot', int(index))
         elif expr.is_NumberSymbol:
-            name = unicode(expr)
+            name = '{0}'.format(expr)
         if name is not None:
             builtin = sympy_to_mathics.get(name)
             if builtin is not None:
@@ -174,7 +173,7 @@ def from_sympy(expr):
         elif isinstance(expr, numbers.NaN):
             return Symbol('Indeterminate')
         elif isinstance(expr, function.FunctionClass):
-            return Symbol(unicode(expr))
+            return Symbol('{0}'.format(expr))
     elif expr.is_number and all([x.is_Number for x in expr.as_real_imag()]):
         # Hack to convert 3 * I to Complex[0, 3]
         return Expression('Complex', *[

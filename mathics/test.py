@@ -96,8 +96,8 @@ def test_case(test, tests, index=0, quiet=False):
                 break
     if not output_ok:
         return fail("Output:\n%s\nWanted:\n%s" % (
-            '\n'.join(unicode(o) for o in out),
-            '\n'.join(unicode(o) for o in wanted_out)))
+            '\n'.join('{0}'.format(o) for o in out),
+            '\n'.join('{0}'.format(o) for o in wanted_out)))
     return True
 
 

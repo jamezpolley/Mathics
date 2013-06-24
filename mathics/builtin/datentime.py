@@ -200,9 +200,9 @@ class _DateFormat(Builtin):
             if (isinstance(etime[0], basestring) and    # noqa
                 isinstance(etime[1], list) and
                 all(isinstance(s, basestring) for s in etime[1])):
-                is_spec = [unicode(s).strip(
-                    '"') in DATE_STRING_FORMATS.keys() for s in etime[1]]
-                etime[1] = map(lambda s: unicode(s).strip('"'), etime[1])
+
+                etime[1] = [s.strip('"') for s in etime[1]]
+                is_spec = [s in DATE_STRING_FORMATS.keys() for s in etime[1]]
 
                 if sum(is_spec) == len(is_spec):
                     forms = []
@@ -223,7 +223,7 @@ class _DateFormat(Builtin):
                 for form in forms:
                     try:
                         date.date = datetime.strptime(
-                            unicode(etime[0]).strip('"'), form)
+                            etime[0].strip('"'), form)
                         break
                     except ValueError:
                         pass
@@ -419,11 +419,11 @@ class DateString(_DateFormat):
 
         datestrs = []
         for p in pyform:
-            if unicode(p) in DATE_STRING_FORMATS.keys():
+            if p in DATE_STRING_FORMATS.keys():
                 # FIXME: Years 1900 before raise an error
                 tmp = date.date.strftime(DATE_STRING_FORMATS[p])
-                if unicode(p).endswith("Short") and unicode(p) != "YearShort":
-                    if unicode(p) == "DateTimeShort":
+                if p.endswith("Short") and p != "YearShort":
+                    if p == "DateTimeShort":
                         tmp = tmp.split(' ')
                         tmp = ' '.join(map(lambda s: s.lstrip(
                             '0'), tmp[:-1]) + [tmp[-1]])
@@ -431,7 +431,7 @@ class DateString(_DateFormat):
                         tmp = ' '.join(map(lambda s: s.lstrip(
                             '0'), tmp.split(' ')))
             else:
-                tmp = unicode(p)
+                tmp = p
 
             datestrs.append(tmp)
 
@@ -769,7 +769,7 @@ class DateDifference(Builtin):
         # Process Units
         pyunits = units.to_python()
         if isinstance(pyunits, basestring):
-            pyunits = [unicode(pyunits.strip('"'))]
+            pyunits = [pyunits.strip('"')]
         elif (isinstance(pyunits, list) and
               all(isinstance(p, basestring) for p in pyunits)):
             pyunits = map(lambda p: p.strip('"'), pyunits)

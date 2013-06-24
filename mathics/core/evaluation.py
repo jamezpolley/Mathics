@@ -236,7 +236,7 @@ class Evaluation(object):
                     else:
                         raise
                 except ValueError as exc:
-                    text = unicode(exc)
+                    text = '{0}'.format(exc)
                     if (text == 'mpz.pow outrageous exponent' or    # noqa
                         text == 'mpq.pow outrageous exp num'):
                         self.message('General', 'ovfl')
@@ -283,7 +283,7 @@ class Evaluation(object):
         if last_parse_error is not None:
             self.recursion_depth = 0
             self.stopped = False
-            self.message('General', 'syntax', unicode(last_parse_error))
+            self.message('General', 'syntax', '{0}'.format(last_parse_error))
             self.results.append(Result(self.out, None, None))
 
     def get_stored_result(self, result):

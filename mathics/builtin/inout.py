@@ -235,7 +235,7 @@ class MakeBoxes(Builtin):
             if isinstance(x, Symbol):
                 return String(x.name)
             elif isinstance(x, String):
-                return String('"' + unicode(x.value) + '"')
+                return String('"{0}"'.format(x.value))
             elif isinstance(x, (Integer, Real)):
                 return x.make_boxes(f.get_name())
             elif isinstance(x, (Rational, Complex)):

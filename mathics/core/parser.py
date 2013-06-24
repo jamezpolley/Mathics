@@ -62,7 +62,7 @@ class ParseError(TranslateError):
         self.token = token
 
     def __unicode__(self):
-        return "Parse error at or near token {0}.".format(unicode(self.token))
+        return "Parse error at or near token {0}.".format(self.token)
 
 # Symbols can be any letters
 base_symb = r'((?![0-9])([0-9${0}{1}])+)'.format(letters, letterlikes)

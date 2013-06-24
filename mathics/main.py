@@ -90,16 +90,17 @@ class TerminalShell(object):
                                 out_callback=out_callback)
         for result in evaluation.results:
             if result.result is not None:
-                print(self.get_out_prompt() +
-                      to_output(unicode(result.result)) + '\n')
+                print('{0}{1}\n'.format(
+                    self.get_out_prompt(), to_output(result.result)))
 
 
 def to_output(text):
+    text = '{0}'.format(text)
     return '\n . '.join(text.splitlines())
 
 
 def out_callback(out):
-    print(to_output(unicode(out)))
+    print(to_output(out))
 
 # Adapted from code at http://mydezigns.wordpress.com/2009/09/22/balanced-brackets-in-python/       # nopep8
 

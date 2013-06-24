@@ -303,8 +303,8 @@ class Derivative(PostfixOperator, SympyFunction):
         func = exprs[1].leaves[0]
 
         # sympy<=0.7.2 isinstance(..., str) bug
-        sym_func = sympy.Function(str(
-            sympy_symbol_prefix + unicode(func)))(sym_x)
+        sym_func = sympy.Function(str('{0}{1}'.format(
+            sympy_symbol_prefix, func)))(sym_x)
 
         count = exprs[2].leaves[0].to_python()
         for i in range(count):
@@ -730,7 +730,8 @@ class Solve(Builtin):
         except NotImplementedError:
             pass
         except TypeError as exc:
-            if unicode(exc).startswith("expected Symbol, Function or Derivative"):
+            exc = '{0}'.format(exc)
+            if exc.startswith("expected Symbol, Function or Derivative"):
                 evaluation.message('Solve', 'ivar', vars_original)
 
 

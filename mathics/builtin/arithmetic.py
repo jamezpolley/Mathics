@@ -64,7 +64,7 @@ class _MPMathFunction(SympyFunction):
                     result = self.eval(*mpmath_args)
                     result = from_sympy(mpmath2sympy(result, prec))
                 except ValueError as exc:
-                    text = unicode(exc)
+                    text = '{0}'.format(exc)
                     if text == 'gamma function pole':
                         return Symbol('ComplexInfinity')
                     else:
@@ -838,10 +838,10 @@ class Power(BinaryOperator, SympyFunction):
                     mp_y = sympy2mpmath(y.to_sympy())
                     result = mp_x ** mp_y
                     if isinstance(result, mpmath.mpf):
-                        return Real(unicode(result), prec)
+                        return Real('{0}'.format(result), prec)
                     elif isinstance(result, mpmath.mpc):
-                        return Complex(unicode(result.real),
-                                       unicode(result.imag), prec)
+                        return Complex('{0}'.format(result.real),
+                            '{0}'.format(result.imag), prec)
             except ZeroDivisionError:
                 evaluation.message('Power', 'infy')
                 return Symbol('ComplexInfinity')

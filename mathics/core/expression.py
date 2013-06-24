@@ -152,7 +152,7 @@ class BaseExpression(object):
         as in Expression.get_pre_choices
         """
 
-        return hash(unicode(self))
+        return hash('{0}'.format(self))
 
     def __lt__(self, other):
         if isinstance(other, Real):
@@ -780,7 +780,7 @@ class Expression(BaseExpression):
     def __str__(self):
         return '{0}[{1}]'.format(
             self.head,
-            ', '.join(['{0}'.format(unicode(leaf)) for leaf in self.leaves]))
+            ', '.join(['{0}'.format(leaf) for leaf in self.leaves]))
 
     def __repr__(self):
         return '<Expression: {0}>'.format(self)
@@ -1294,7 +1294,7 @@ class Symbol(Atom):
 
 class Number(Atom):
     def __str__(self):
-        return unicode(self.value)
+        return "{0}".format(self.value)
 
     @staticmethod
     def from_string(value):

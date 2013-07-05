@@ -27,6 +27,12 @@ from __future__ import unicode_literals
 
 import sympy
 
+def python_2_unicode_compatible(cls):
+    cls.__unicode__ = cls.__str__
+    cls.__str__ = lambda self: self.__unicode__().encode('utf-8')
+    return cls
+
+
 sympy_symbol_prefix = '_Mathics_User_'
 sympy_slot_prefix = '_Mathics_Slot_'
 
@@ -53,6 +59,7 @@ class ConvertSubstitutions(object):
 BasicSympy = sympy.Expr
 
 
+@python_2_unicode_compatible
 class SympyExpression(BasicSympy):
     is_Function = True
     nargs = None

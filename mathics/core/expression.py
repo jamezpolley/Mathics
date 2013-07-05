@@ -32,6 +32,12 @@ from mathics.core.convert import sympy_symbol_prefix, SympyExpression
 builtin_evaluation = Evaluation()
 
 
+def python_2_unicode_compatible(cls):
+    cls.__unicode__ = cls.__str__
+    cls.__str__ = lambda self: self.__unicode__().encode('utf-8')
+    return cls
+
+
 class BoxError(Exception):
     def __init__(self, box, form):
         super(BoxError, self).__init__(
@@ -45,6 +51,7 @@ class NumberError(Exception):
         super(NumberError, self).__init__()
 
 
+@python_2_unicode_compatible
 class ExpressionPointer(object):
     def __init__(self, parent, position):
         self.parent = parent
@@ -408,6 +415,7 @@ class Monomial(object):
         return 0
 
 
+@python_2_unicode_compatible
 class Expression(BaseExpression):
     def __init__(self, head, *leaves, **kwargs):
         super(Expression, self).__init__(**kwargs)
@@ -1194,6 +1202,7 @@ class Atom(BaseExpression):
         return [self]
 
 
+@python_2_unicode_compatible
 class Symbol(Atom):
     def __init__(self, name, sympy_dummy=None, **kwargs):
         super(Symbol, self).__init__(**kwargs)
@@ -1292,6 +1301,7 @@ class Symbol(Atom):
                              'MachinePrecision', 'Catalan')
 
 
+@python_2_unicode_compatible
 class Number(Atom):
     def __str__(self):
         return "{0}".format(self.value)
@@ -1726,6 +1736,7 @@ extra_operators = set((',', '(', ')', '[', ']', '{', '}',
                        '\u2032\u2032', ' ', '\u2062', '\u222b', '\u2146'))
 
 
+@python_2_unicode_compatible
 class String(Atom):
     def __init__(self, value, **kwargs):
         super(String, self).__init__(**kwargs)

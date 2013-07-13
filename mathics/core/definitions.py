@@ -47,7 +47,6 @@ class Definitions(object):
 
         if add_builtin:
             from mathics.builtin import modules, contribute
-            from mathics.core.evaluation import Evaluation
             from mathics.settings import ROOT_DIR
 
             loaded = False
@@ -66,12 +65,11 @@ class Definitions(object):
                     pickle.dump(self.builtin, builtin_file, -1)
 
             self.autoload_stage = True
-            for root, dirs, files in os.walk(   # noqa
-                os.path.join(ROOT_DIR, 'autoload')):
-
-                for f in filter(lambda x: x.endswith('.m'), files):
-                    with open(os.path.join(root, f)) as stream:
-                        Evaluation(stream.read(), self, timeout=30)
+            #TODO
+            #for root, dirs, files in os.walk(os.path.join(ROOT_DIR,'autoload')):
+            #    for f in filter(lambda x: x.endswith('.m'), files):
+            #        with open(os.path.join(root,f)) as stream:
+            #            evaluation = Evaluation(stream.read(), self, timeout=30)
             self.autoload_stage = False
 
     def get_builtin_names(self):

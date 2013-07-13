@@ -32,8 +32,6 @@ from mathics.core.evaluation import Evaluation
 from mathics.core.util import subsets, subranges, permutations, interpolate_string
 from mathics.core.convert import from_sympy, ConvertSubstitutions, sympy_symbol_prefix, SympyExpression
 
-builtin_evaluation = Evaluation()
-
 class BoxError(Exception):
     def __init__(self, box, form):
         super(BoxError, self).__init__('Box %s cannot be formatted as %s' % (box, form))
@@ -91,7 +89,7 @@ class BaseExpression(object):
     def get_attributes(self, definitions):
         return set()
     
-    def evaluate(self, evaluation=builtin_evaluation):
+    def evaluate(self, evaluation):
         evaluation.check_stopped()
         return self
     
@@ -615,7 +613,7 @@ class Expression(BaseExpression):
         else:
             return self
         
-    def evaluate(self, evaluation=builtin_evaluation):
+    def evaluate(self, evaluation):
         evaluation.inc_recursion_depth()
         old_options = evaluation.options
         if hasattr(self, 'options') and self.options:
@@ -1155,7 +1153,7 @@ class Symbol(Atom):
     def has_symbol(self, symbol_name):
         return self.name == symbol_name
         
-    def evaluate(self, evaluation=builtin_evaluation):
+    def evaluate(self, evaluation):
         rules = evaluation.definitions.get_ownvalues(self.name)
         for rule in rules:
             result = rule.apply(self, evaluation, fully=True)
@@ -1259,7 +1257,7 @@ class Integer(Number):
     def same(self, other):
         return isinstance(other, Integer) and self.value == other.value
     
-    def evaluate(self, evaluation=builtin_evaluation):
+    def evaluate(self, evaluation):
         evaluation.check_stopped()
         return self
     
@@ -1322,7 +1320,7 @@ class Rational(Number):
     def default_format(self, evaluation, form):
         return 'Rational[%s, %s]' % self.value.as_numer_denom()
     
-    def evaluate(self, evaluation=builtin_evaluation):
+    def evaluate(self, evaluation):
         evaluation.check_stopped()
         return self
     
@@ -1429,7 +1427,7 @@ class Real(Number):
     def same(self, other):
         return isinstance(other, Real) and self.to_sympy() == other.to_sympy()
     
-    def evaluate(self, evaluation=builtin_evaluation):
+    def evaluate(self, evaluation):
         evaluation.check_stopped()
         return self      
     
@@ -1522,7 +1520,7 @@ class Complex(Number):
     def same(self, other):
         return isinstance(other, Complex) and self.real == other.real and self.imag == other.imag
     
-    def evaluate(self, evaluation=builtin_evaluation):
+    def evaluate(self, evaluation):
         evaluation.check_stopped()
         return self
         

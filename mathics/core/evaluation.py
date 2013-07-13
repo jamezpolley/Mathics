@@ -150,135 +150,71 @@ class Result(object):
         }
         
 class Evaluation(object):
-    def __init__(self, input=None, definitions=None, timeout=None, out_callback=None, format='text',
-        catch_interrupt=True):
-        from mathics.core.definitions import Definitions
-        
+    def __init__(self, expression=None, definitions=None, timeout=None,
+                 format='text', catch_interrupt=True):
+
+        from mathics.core.expression import Expression, Symbol
+
         if definitions is None:
+            from mathics.core.definitions import Definitions
             definitions = Definitions()
         self.definitions = definitions
+
         self.recursion_depth = 0
         self.timeout = False
         self.stopped = False
-        self.out = []
-        self.out_callback = out_callback
+        self.messages = []
         self.listeners = {}
         self.options = None
-        
         self.quiet_all = False
         self.quiet_messages = set()
         
         self.format = format
+
+        self.recursion_depth = 0
+        self.timeout = False
+        self.stopped = False
         
-        queries = []
-        last_parse_error = None
-        if input is not None:
-            from mathics.core.parser import parse, TranslateError
-            
-            lines = input.splitlines()
-            query = ''
-            for line in lines:
-                if line:
-                    query += line
-                    try:
-                        expression = parse(query)
-                        if expression is not None:
-                            queries.append(expression)
-                        query = ''
-                        last_parse_error = None
-                    except TranslateError, exc:
-                        last_parse_error = exc
-                else:
-                    query += ' '
-            
-        self.results = []
+        if expression is None:
+            return
         
-        for query in queries:
-            self.recursion_depth = 0
-            self.timeout = False
+        def evaluate(self):
+            return expression.evaluate(self)
+
+        try:
+            result = timeout_call(evaluate, self.stop, timeout, *[self])
+        except KeyboardInterrupt:
+            if catch_interrupt:
+                result = Symbol('$Aborted')
+            else:
+                raise
+        except ValueError, exc:
+            text = unicode(exc)
+            if text in ('mpz.pow outrageous exponent', 'mpq.pow outrageous exp num'):
+                self.message('General', 'ovfl')
+                result = Expression('Overflow')
+            else:
+                raise
+        except OverflowError:
+            self.message('General', 'ovfl')
+            result = Expression('Overflow')
+        except BreakInterrupt:
+            self.message('Break', 'nofdw')
+            result = Expression('Hold', Expression('Break'))
+        except ContinueInterrupt:
+            self.message('Continue', 'nofdw')
+            result = Expression('Hold', Expression('Continue'))
+        except TimeoutInterrupt:
             self.stopped = False
-        
-            from mathics.core.expression import Symbol, Expression, Integer
-            from mathics.core.rules import Rule
-            
-            line_no = self.get_config_value('$Line', 0)
-            line_no += 1
-            self.definitions.set_ownvalue('$Line', Integer(line_no))
-            
-            history_length = self.get_config_value('$HistoryLength', 100)
-            if history_length is None or history_length > 100:
-                history_length = 100
-            
-            def evaluate(self):
-                if history_length > 0:
-                    self.definitions.add_rule('In', Rule(Expression('In', line_no), query))
-                result = query.evaluate(self)
-                if history_length > 0:
-                    stored_result = self.get_stored_result(result)
-                    self.definitions.add_rule('Out', Rule(Expression('Out', line_no), stored_result))
-                if result != Symbol('Null'):
-                    return self.format_output(result)
-                else:
-                    return None
-                     
-            try:
-                result = None
-                exc_result = None
-                try:
-                    result = timeout_call(evaluate, self.stop, timeout, *[self])
-                except KeyboardInterrupt:
-                    if catch_interrupt:
-                        exc_result = Symbol('$Aborted')
-                    else:
-                        raise
-                except ValueError, exc:
-                    text = unicode(exc)
-                    if text == 'mpz.pow outrageous exponent' or text == 'mpq.pow outrageous exp num':
-                        self.message('General', 'ovfl')
-                        exc_result = Expression('Overflow')
-                    else:
-                        raise
-                except OverflowError:
-                    self.message('General', 'ovfl')
-                    exc_result = Expression('Overflow')
-                except BreakInterrupt:
-                    self.message('Break', 'nofdw')
-                    exc_result = Expression('Hold', Expression('Break'))
-                except ContinueInterrupt:
-                    self.message('Continue', 'nofdw')
-                    exc_result = Expression('Hold', Expression('Continue'))
-                except TimeoutInterrupt:
-                    self.stopped = False
-                    self.timeout = True
-                    self.message('General', 'timeout')
-                    exc_result = Symbol('$Aborted')                        
-                except AbortInterrupt: #, error:
-                    exc_result = Symbol('$Aborted')
-                if exc_result is not None:
-                    self.recursion_depth = 0
-                    result = self.format_output(exc_result)
-                    
-                self.results.append(Result(self.out, result, line_no))
-                self.out = []
-            finally:
-                self.stop()
-        
-            history_length = self.get_config_value('$HistoryLength', 100)
-            if history_length is None or history_length > 100:
-                history_length = 100
-            line = line_no - history_length
-            while line > 0:
-                unset_in = self.definitions.unset('In', Expression('In', line))
-                unset_out = self.definitions.unset('Out', Expression('Out', line))
-                if not (unset_in or unset_out):
-                    break
-                line -= 1
-                
-        if last_parse_error is not None:
-            self.recursion_depth = 0
-            self.stopped = False
-            self.message('General', 'syntax', unicode(last_parse_error))
-            self.results.append(Result(self.out, None, None))
+            self.timeout = True
+            self.message('General', 'timeout')
+            result = Symbol('$Aborted')                        
+        except AbortInterrupt: #, error:
+            result = Symbol('$Aborted')
+
+        self.recursion_depth = 0
+        self.result = result
+        self.stop()
             
     def get_stored_result(self, result):
         from mathics.core.expression import Symbol
@@ -334,20 +270,19 @@ class Evaluation(object):
             
         text = self.format_output(Expression('StringForm', text, *(from_python(arg) for arg in args)))
         
-        self.out.append(Message(symbol, tag, text))
-        if self.out_callback:
-            self.out_callback(self.out[-1])
+        self.messages.append(Message(symbol, tag, text))
     
     def print_out(self, text):
-        from mathics.core.expression import from_python
-        
-        text = self.format_output(from_python(text))
-        
-        self.out.append(Print(text))
-        if self.out_callback:
-            self.out_callback(self.out[-1])
-        if settings.DEBUG_PRINT:
-            print 'OUT: ' + text
+        raise NotImplementedError
+        #from mathics.core.expression import from_python
+        #
+        #text = self.format_output(from_python(text))
+        #
+        #self.out.append(Print(text))
+        #if self.out_callback:
+        #    self.out_callback(self.out[-1])
+        #if settings.DEBUG_PRINT:
+        #    print 'OUT: ' + text
         
     def error(self, symbol, tag, *args):
         # Temporarily reset the recursion limit, to allow the message being formatted

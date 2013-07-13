@@ -145,6 +145,7 @@ setup(
         'console_scripts': [
             'mathics = mathics.main:main',
             'mathicsserver = mathics.server:main',
+            'MathicsKernel = mathics.kernel:main',
         ],
     },
     

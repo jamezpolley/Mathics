@@ -20,6 +20,7 @@ u"""
 
 import argparse
 import os
+import sys
 
 from mathics import print_version, print_license, get_version_string
 from mathics.core.expression import Expression, Integer, String, Symbol
@@ -57,19 +58,22 @@ def main():
     args = argparser.parse_args()
 
     if args.noprompt:
-        in_prompt, out_prompt = "\n", "{1}" 
+        in_prompt, out_prompt = "", "{1}\n" 
     else:
-        in_prompt, out_prompt = "\nIn[{0}]:= ", "Out[{0}]= {1}"
+        in_prompt, out_prompt = "In[{0}]:= ", "Out[{0}]= {1}\n"
+
+    instream, outstream = sys.stdin, sys.stdout
 
     def get_input_line(line_no):
         "Gets the next input line"
-        return raw_input(in_prompt.format(line_no))
+        return result
 
     def put_result_output(expression, line_no):
-        print(out_prompt.format(line_no, expression))
+        outstream.write(out_prompt.format(line_no, expression))
+        outstream.write('\n')
 
     def put_message_output(message):
-        print(message)
+        outstream.write('{0}\n\n'.format(message))
 
     def apply_syntaxhandler(input_string):
         pass
@@ -162,9 +166,23 @@ def main():
 
     while True:
         try:
-            input_string = get_input_line(line_no)
+            outstream.write(in_prompt.format(line_no))
+            input_string = instream.readline()
+
+            if input_string == '':          # Stream is closed
+                raise EOFError
+            elif input_string == '\n':      # Empty input
+                continue
+            input_string = input_string.rstrip('\n')
+        except KeyboardInterrupt:
+            outstream.write('\nKeyboardInterrupt\n')
+            #TODO: Interrupt> prompt
+            continue
         except EOFError:
+            outstream.write('\n')
             break
+
+        outstream.write('\n')
 
         # Apply $PreRead
         # TODO
@@ -192,7 +210,7 @@ def main():
 
         for message in messages:
             put_message_output(message)
-        definitions.set_ownvalue('$MessageList', Expression('List', *messages))
+        definitions.set_ownvalue('$MessageList', Expression('List', *[msg.to_expression() for msg in messages]))
 
         # Apply $Post
         # TODO
@@ -205,7 +223,10 @@ def main():
             put_result_output(expression, line_no)
 
         # Assign MessageList[n]
-        definitions.add_rule('MessageList', Rule(Expression('MessageList', Integer(line_no)), definitions.get_ownvalue('$MessageList')))
+
+        # FIXME: Do this during evaluation such that e.g. '1/0; $MessageList'
+        # returns {Power::infy}
+        definitions.add_rule('MessageList', Rule(Expression('MessageList', Integer(line_no)), simple_evaluate('$MessageList')))
 
         # Reset $MessageList
         definitions.set_ownvalue('$MessageList', Expression('List'))

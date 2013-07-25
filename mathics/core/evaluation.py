@@ -98,7 +98,7 @@ class Message(Out):
         self.text = text
     
     def __str__(self):
-        return ' : ' + self.text
+        return '{0}::{1}: {2}'.format(self.symbol, self.tag, self.text)
         
     def __cmp__(self, other):
         if self.is_message == other.is_message and self.text == other.text:
@@ -114,6 +114,10 @@ class Message(Out):
             'prefix': u'%s::%s' % (self.symbol, self.tag),
             'text': self.text,
         }
+
+    def to_expression(self):
+        from mathics.core.expression import Expression, Symbol, String
+        return Expression('HoldForm', Expression('MessageName', Symbol(self.symbol), String(self.tag)))
 
 class Print(Out):
     def __init__(self, text):
@@ -163,7 +167,10 @@ class Evaluation(object):
         self.recursion_depth = 0
         self.timeout = False
         self.stopped = False
+
+        self.result = None
         self.messages = []
+
         self.listeners = {}
         self.options = None
         self.quiet_all = False

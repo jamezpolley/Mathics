@@ -27,7 +27,7 @@ from mathics.core.expression import Expression, Integer, String, Symbol
 from mathics.core.rules import Rule
 from mathics.core.evaluation import Evaluation
 from mathics.core.definitions import Definitions
-from mathics.core.parser import parse
+from mathics.core.parser import parse, TranslateError
 
 
 def main():
@@ -79,7 +79,7 @@ def main():
         pass
 
     def print_syntax_warnings(exception):
-        pass
+        outstream.write('{0}\n\n'.format(unicode(exception)))
 
     def simple_evaluate(input_string):
         """
@@ -88,7 +88,7 @@ def main():
         """
         try:
             input_expression = parse(input_string)
-        except SyntaxError as e:
+        except TranslateError as e:
             print_syntax_warnings(e)
             return
         evaluation = Evaluation(input_expression, definitions, timeout=30)
@@ -189,7 +189,7 @@ def main():
 
         try:
             input_expression = parse(input_string)
-        except SyntaxError as e:
+        except TranslateError as e:
             print_syntax_warnings(e)
             apply_syntaxhandler(input_string)
             continue

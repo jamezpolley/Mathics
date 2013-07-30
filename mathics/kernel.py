@@ -60,7 +60,7 @@ def main():
     if args.noprompt:
         in_prompt, out_prompt = "", "{1}\n" 
     else:
-        in_prompt, out_prompt = "In[{0}]:= ", "Out[{0}]= {1}\n"
+        in_prompt, out_prompt = "In[{0}]:= ", "Out[{0}]= {1}\n\n"
 
     instream, outstream = sys.stdin, sys.stdout
 
@@ -70,7 +70,6 @@ def main():
 
     def put_result_output(expression, line_no):
         outstream.write(out_prompt.format(line_no, expression))
-        outstream.write('\n')
 
     def put_message_output(message):
         outstream.write('{0}\n\n'.format(message))
@@ -182,7 +181,8 @@ def main():
             outstream.write('\n')
             break
 
-        outstream.write('\n')
+        if not args.noprompt:
+            outstream.write('\n')
 
         # Apply $PreRead
         # TODO

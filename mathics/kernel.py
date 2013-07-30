@@ -22,7 +22,7 @@ import argparse
 import os
 import sys
 
-from mathics import print_version, print_license, get_version_string
+from mathics import get_banner_string
 from mathics.core.expression import Expression, Integer, String, Symbol
 from mathics.core.rules import Rule
 from mathics.core.evaluation import Evaluation
@@ -104,9 +104,9 @@ def main():
     definitions = Definitions(add_builtin=True)
 
     # Print banner
-    if args.noprompt is None:
-        print_version(is_server=False)
-        print_license()
+    if not args.noprompt:
+        outstream.write(get_banner_string(is_server=False, verbose=False))
+    outstream.write("\n")
 
     ## PRE EVALUATION
 

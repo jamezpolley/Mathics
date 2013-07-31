@@ -220,9 +220,12 @@ def main():
     total_input = ""
     while True:
         try:
-            line = raw_input(shell.get_in_prompt(continued=total_input != ''))
             if sys.version_info[0] == 2:
+                line = raw_input(shell.get_in_prompt(continued=total_input != ''))
                 line = line.decode(sys.stdin.encoding)
+            else:
+                line = input(shell.get_in_prompt(continued=total_input != ''))
+
             total_input += line
             if line != "" and wait_for_line(total_input):
                 continue

@@ -126,7 +126,7 @@ def get_plot_range(values, all_values, option):
 
 
 class _Plot(Builtin):
-    from graphics import Graphics
+    from mathics.builtin.graphics import Graphics
 
     attributes = ('HoldAll',)
 
@@ -1027,7 +1027,7 @@ class ListPlot(_ListPlot):
      = -Graphics-
     """
 
-    from graphics import Graphics
+    from mathics.builtin.graphics import Graphics
 
     attributes = ('HoldAll',)
 
@@ -1060,7 +1060,7 @@ class ListLinePlot(_ListPlot):
     >> ListLinePlot[{{-2, -1}, {-1, -1}}]
      = -Graphics-
     """
-    from graphics import Graphics
+    from mathics.builtin.graphics import Graphics
 
     attributes = ('HoldAll',)
 
@@ -1099,7 +1099,7 @@ class Plot3D(_Plot3D):
      = -Graphics3D-
     """
 
-    from graphics import Graphics
+    from mathics.builtin.graphics import Graphics
 
     attributes = ('HoldAll',)
 
@@ -1171,7 +1171,7 @@ class DensityPlot(_Plot3D):
      = -Graphics-
     """
 
-    from graphics import Graphics
+    from mathics.builtin.graphics import Graphics
 
     attributes = ('HoldAll',)
 

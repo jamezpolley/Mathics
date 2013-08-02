@@ -9,7 +9,7 @@ Random numbers are generated using the Mersenne Twister.
 from __future__ import with_statement
 
 import random
-import cPickle as pickle
+from six.moves import cPickle as pickle
 import binascii
 
 from mathics.builtin.base import Builtin

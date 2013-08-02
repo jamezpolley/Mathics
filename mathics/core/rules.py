@@ -64,7 +64,7 @@ class BaseRule(object):
                 # continue
                 return
             options = {}
-            for name, value in vars.items():
+            for name, value in list(vars.items()):
                 if name.startswith('_option_'):
                     options[name[len('_option_'):]] = value
                     del vars[name]
@@ -115,7 +115,7 @@ class BaseRule(object):
             self.pattern.match(
                 yield_match, expression, {}, evaluation, fully=fully)
         # except StopGenerator("BaseRule_apply"), exc:
-        except StopGenerator_BaseRule, exc:
+        except StopGenerator_BaseRule as exc:
             # print "exc"
             # print "Apply %s -> %s" % (self, exc.value)
             return exc.value

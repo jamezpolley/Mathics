@@ -23,6 +23,7 @@ from __future__ import unicode_literals
 import sys
 import sympy
 import mpmath
+import six
 import re
 
 from mathics.core.numbers import get_type, dps, prec, min_prec
@@ -33,8 +34,9 @@ builtin_evaluation = Evaluation()
 
 
 def python_2_unicode_compatible(cls):
-    cls.__unicode__ = cls.__str__
-    cls.__str__ = lambda self: self.__unicode__().encode('utf-8')
+    if not six.PY3:
+        cls.__unicode__ = cls.__str__
+        cls.__str__ = lambda self: self.__unicode__().encode('utf-8')
     return cls
 
 
@@ -69,13 +71,13 @@ class ExpressionPointer(object):
 
 def from_python(arg):
     number_type = get_type(arg)
-    if isinstance(arg, int) or isinstance(arg, long) or number_type == 'z':
+    if isinstance(arg, six.integer_types) or number_type == 'z':
         return Integer(arg)
     elif isinstance(arg, float) or number_type == 'f':
         return Real(arg)
     elif number_type == 'q':
         return Rational(arg)
-    elif isinstance(arg, basestring):
+    elif isinstance(arg, six.string_types):
         return String(arg)
     elif isinstance(arg, BaseExpression):
         return arg
@@ -386,8 +388,8 @@ class Monomial(object):
                 other_exps[var] -= dec
                 if not other_exps[var]:
                     del other_exps[var]
-        self_exps = sorted((var, exp) for var, exp in self_exps.iteritems())
-        other_exps = sorted((var, exp) for var, exp in other_exps.iteritems())
+        self_exps = sorted((var, exp) for var, exp in six.iteritems(self_exps))
+        other_exps = sorted((var, exp) for var, exp in six.iteritems(other_exps))
 
         index = 0
         self_len = len(self_exps)
@@ -419,7 +421,7 @@ class Monomial(object):
 class Expression(BaseExpression):
     def __init__(self, head, *leaves, **kwargs):
         super(Expression, self).__init__(**kwargs)
-        if isinstance(head, basestring):
+        if isinstance(head, six.string_types):
             head = Symbol(head)
         self.head = head
         self.leaves = [from_python(leaf) for leaf in leaves]
@@ -691,14 +693,14 @@ class Expression(BaseExpression):
             if 'HoldAll' in attributes or 'HoldAllComplete' in attributes:
                 eval_range = []
             elif 'HoldFirst' in attributes:
-                eval_range = range(1, len(leaves))
+                eval_range = list(range(1, len(leaves)))
             elif 'HoldRest' in attributes:
                 if len(leaves) > 0:
                     eval_range = [0]
                 else:
                     eval_range = []
             else:
-                eval_range = range(len(leaves))
+                eval_range = list(range(len(leaves)))
 
             if 'HoldAllComplete' not in attributes:
                 for index, leaf in enumerate(self.leaves):
@@ -1335,7 +1337,7 @@ class Number(Atom):
             real, imag = value.as_real_imag()
             return Complex(real, imag, prec)
 
-        if isinstance(value, (int, long)):
+        if isinstance(value, six.integer_types):
             return Integer(value)
         elif isinstance(value, float):
             return Real(value)
@@ -1489,7 +1491,7 @@ class Real(Number):
         from mathics.builtin.numeric import machine_precision
         super(Real, self).__init__()
 
-        if isinstance(value, basestring):
+        if isinstance(value, six.string_types):
             value = str(value)
             if p is None:
                 digits = (''.join(re.findall('[0-9]+', value))).lstrip('0')
@@ -1601,7 +1603,7 @@ class Complex(Number):
     def __init__(self, real, imag, p=None, **kwargs):
         super(Complex, self).__init__(**kwargs)
 
-        if isinstance(real, basestring):
+        if isinstance(real, six.string_types):
             real = str(real)
             if '.' in real:
                 self.real = Real(real, p)
@@ -1612,7 +1614,7 @@ class Complex(Number):
         else:
             self.real = Number.from_mp(real)
 
-        if isinstance(imag, basestring):
+        if isinstance(imag, six.string_types):
             imag = str(imag)
             if '.' in imag:
                 self.imag = Real(imag, p)

@@ -26,10 +26,12 @@ from __future__ import unicode_literals
 """
 
 import sympy
+import six
 
 def python_2_unicode_compatible(cls):
-    cls.__unicode__ = cls.__str__
-    cls.__str__ = lambda self: self.__unicode__().encode('utf-8')
+    if not six.PY3:
+        cls.__unicode__ = cls.__str__
+        cls.__str__ = lambda self: self.__unicode__().encode('utf-8')
     return cls
 
 

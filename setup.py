@@ -149,7 +149,7 @@ setup(
     # don't pack Mathics in egg because of sqlite database, media files, etc.
     zip_safe=False,
 
-    use_2to3 = True,
+    #use_2to3 = True,
 
     # metadata for upload to PyPI
     author="Jan Poeschko",

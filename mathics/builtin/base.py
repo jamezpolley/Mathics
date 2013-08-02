@@ -20,6 +20,7 @@
 
 import re
 import sympy
+import six
 
 from mathics.core.definitions import Definition
 from mathics.core.rules import Rule, BuiltinRule, Pattern
@@ -113,10 +114,10 @@ class Builtin(object):
             attributes = ['Protected']
         attributes += list(self.attributes)
         options = {}
-        for option, value in self.options.iteritems():
+        for option, value in six.iteritems(self.options):
             options[option] = parse(value)
         defaults = []
-        for spec, value in self.defaults.iteritems():
+        for spec, value in six.iteritems(self.defaults):
             value = parse(value)
             pattern = None
             if spec is None:

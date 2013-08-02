@@ -18,6 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import six
 import pickle
 import os
 
@@ -114,7 +115,7 @@ class Definitions(object):
         options = builtin.options.copy()
         options.update(user.options)
         formatvalues = builtin.formatvalues.copy()
-        for form, rules in user.formatvalues.iteritems():
+        for form, rules in six.iteritems(user.formatvalues):
             if form in formatvalues:
                 formatvalues[form].extend(rules)
             else:
@@ -267,8 +268,8 @@ class Definitions(object):
         return None
 
     def set_ownvalue(self, name, value):
-        from expression import Symbol
-        from rules import Rule
+        from mathics.core.expression import Symbol
+        from mathics.core.rules import Rule
 
         self.add_rule(name, Rule(Symbol(name), value))
 

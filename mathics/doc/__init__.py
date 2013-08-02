@@ -18,6 +18,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from doc import Documentation
+from mathics.doc.doc import Documentation
 
 documentation = Documentation()

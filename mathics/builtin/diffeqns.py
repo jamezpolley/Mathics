@@ -125,7 +125,6 @@ class DSolve(Builtin):
             if not isinstance(sym_result, list):
                 sym_result = [sym_result]
         except ValueError as e:
-            print e
             evaluation.message('DSolve', 'symimp')
             return
         except NotImplementedError:

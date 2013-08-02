@@ -22,7 +22,8 @@ from __future__ import print_function, unicode_literals
 
 import threading
 import sys
-import cPickle as pickle
+import six
+from six.moves import cPickle as pickle
 
 from mathics import settings
 
@@ -62,7 +63,7 @@ def timeout_call(func, stop_func=None, timeout_duration=None, *args, **kwargs):
         if thread.exception:
             # raise thread.exception
             exc_type, exc_value, exc_traceback = thread.exc_info
-            raise exc_type, exc_value, exc_traceback
+            six.reraise(exc_type, exc_value, exc_traceback)
         return thread.result
 
 

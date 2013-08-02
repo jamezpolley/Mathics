@@ -7,7 +7,7 @@ Importing and Exporting
 from mathics.core.expression import Expression, from_python
 from mathics.builtin.base import Builtin, Predefined, Symbol, String
 
-from pymimesniffer import magic
+from mathics.builtin.pymimesniffer import magic
 import mimetypes
 
 

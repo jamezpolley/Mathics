@@ -7,6 +7,7 @@ Linear algebra
 from __future__ import unicode_literals
 
 import sympy
+import six
 
 from mathics.builtin.base import Builtin
 from mathics.core.convert import from_sympy
@@ -244,9 +245,8 @@ class Eigenvalues(Builtin):
         matrix = to_sympy_matrix(m)
         if matrix is None or matrix.cols != matrix.rows or matrix.cols == 0:
             return evaluation.message('Eigenvalues', 'matsq', m)
-        eigenvalues = matrix.eigenvals()
-        eigenvalues = sorted(eigenvalues.iteritems(),
-                             key=lambda (v, c): (abs(v), -v), reverse=True)
+        eigenvalues = list(six.iteritems(matrix.eigenvals()))
+        eigenvalues.sort(key=lambda vc: (abs(vc[0]), -vc[0]), reverse=True)
         result = []
         for val, count in eigenvalues:
             result.extend([val] * count)
@@ -294,8 +294,7 @@ class Eigenvectors(Builtin):
                 'Eigenvectors', 'eigenvecnotimplemented', m)
 
         # The eigenvectors are given in the same order as the eigenvalues.
-        eigenvects = sorted(eigenvects, key=lambda (
-            val, c, vect): (abs(val), -val), reverse=True)
+        eigenvects.sort(key=lambda vcv: (abs(vcv[0]), -vcv[0]), reverse=True)
         result = []
         for val, count, basis in eigenvects:
             # Select the i'th basis vector, convert matrix to vector,

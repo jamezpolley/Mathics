@@ -7,9 +7,10 @@ Graphics (3D)
 import numbers
 from mathics.core.expression import Expression, NumberError, from_python
 from mathics.builtin.base import BoxConstructError, Builtin, InstancableBuiltin
-from graphics import (Graphics, GraphicsBox, PolygonBox, create_pens, _Color,
-                      LineBox, PointBox, Style, RGBColor, get_class,
-                      asy_number, CoordinatesError, _GraphicsElements)
+from mathics.builtin.graphics import (
+    Graphics, GraphicsBox, PolygonBox, create_pens, _Color, LineBox, PointBox,
+    Style, RGBColor, get_class, asy_number, CoordinatesError,
+    _GraphicsElements)
 
 from django.utils import simplejson as json
 

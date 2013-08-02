@@ -13,7 +13,7 @@ from __future__ import with_statement
 import sympy
 import mpmath
 
-from mathics.builtin.base import Builtin, Predefined, SympyConstant, SympyFunction
+from mathics.builtin.base import Builtin, Predefined, SympyConstant
 from mathics.core.expression import Number, Real, Expression, Integer, from_sympy
 from mathics.core.numbers import dps, prec
 
@@ -88,7 +88,7 @@ class GoldenRatio(SympyConstant):
         'N[GoldenRatio, prec_]': 'N[(1+Sqrt[5])/2, prec]',
     }
                         
-class Exp(SympyFunction):
+class Exp(_MPMathFunction):
     """
     <dl>
     <dt>'Exp[$z$]'

@@ -35,8 +35,8 @@ def main():
         prog='MathicsKernel',
         usage='%(prog)s [options]',
         add_help=False,
-        description = "Runs a standalone Mathics kernel",
-        epilog = """Please feel encouraged to contribute to Mathics! Create
+        description="Runs a standalone Mathics kernel",
+        epilog="""Please feel encouraged to contribute to Mathics! Create
             your own fork, make the desired changes, commit, and make a pull 
             request.""")
 

@@ -126,6 +126,7 @@ class Message(Out):
         return Expression('HoldForm', Expression(
             'MessageName', Symbol(self.symbol), String(self.tag)))
 
+
 class Print(Out):
     def __init__(self, text):
         super(Print, self).__init__()

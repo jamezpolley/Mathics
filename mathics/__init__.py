@@ -42,6 +42,7 @@ def get_version_string(is_server, newlines=False, verbose=True):
         result.append(u"using %s" % ", ".join(libs))
     return ("\n" if newlines else " ").join(result)
 
+
 def get_license_string(newlines=False, verbose=True):
     result = ["Copyright (C) 2011-2013 The Mathics Team."]
     if verbose:
@@ -59,6 +60,7 @@ def print_version(is_server):
 
 def print_license():
     print "\n" + get_license_string(newlines=True)
+
 
 def get_banner_string(is_server, verbose=True):
     return (get_version_string(is_server, newlines=True, verbose=verbose) + "\n"

@@ -89,23 +89,21 @@ class Definitions(object):
 
         if user is None and builtin is None:
             return Definition(name=name)
-        if builtin is None:
+        elif builtin is None:
             return user
-        if user is None:
+        elif user is None:
             return builtin
 
-        if user:
-            attributes = user.attributes
-        elif builtin:
-            attributes = builtin.attributes
-        else:
-            attributes = set()
-        if not user:
-            user = Definition(name=name)
-        if not builtin:
-            builtin = Definition(name=name)
+        ## Both user and builtin definitons found -> must handle conflicts
+
+        # attributes
+        attributes = user.attributes
+
+        # options
         options = builtin.options.copy()
         options.update(user.options)
+
+        # formatvalues
         formatvalues = builtin.formatvalues.copy()
         for form, rules in user.formatvalues.iteritems():
             if form in formatvalues:
@@ -113,19 +111,20 @@ class Definitions(object):
             else:
                 formatvalues[form] = rules
 
-        return Definition(name=name,
-                          ownvalues=user.ownvalues + builtin.ownvalues,
-                          downvalues=user.downvalues + builtin.downvalues,
-                          subvalues=user.subvalues + builtin.subvalues,
-                          upvalues=user.upvalues + builtin.upvalues,
-                          formatvalues=formatvalues,
-                          messages=user.messages + builtin.messages,
-                          attributes=attributes,
-                          options=options,
-                          nvalues=user.nvalues + builtin.nvalues,
-                          defaultvalues=user.defaultvalues +
-                          builtin.defaultvalues,
-                          )
+        return Definition(
+            name=name,
+            ownvalues=user.ownvalues + builtin.ownvalues,
+            downvalues=user.downvalues + builtin.downvalues,
+            subvalues=user.subvalues + builtin.subvalues,
+            upvalues=user.upvalues + builtin.upvalues,
+            formatvalues=formatvalues,
+            messages=user.messages + builtin.messages,
+            attributes=attributes,
+            options=options,
+            nvalues=user.nvalues + builtin.nvalues,
+            defaultvalues=user.defaultvalues +
+            builtin.defaultvalues,
+        )
 
     def get_attributes(self, name):
         return self.get_definition(name).attributes

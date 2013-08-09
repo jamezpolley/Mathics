@@ -27,7 +27,7 @@ import os
 from argparse import ArgumentParser
 
 from mathics.core.definitions import Definitions
-from mathics.core.expression import Evaluation
+from mathics.core.evaluation import Evaluation
 from mathics.builtin import builtins
 from mathics.doc import documentation
 from mathics import get_version_string

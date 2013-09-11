@@ -13,6 +13,7 @@ import zlib
 import base64
 import tempfile
 import time
+import locale
 
 from mathics.core.expression import Expression, String, Symbol, from_python
 from mathics.builtin.base import (Builtin, Predefined, BinaryOperator,
@@ -315,6 +316,58 @@ class OperatingSystem(Predefined):
             return String('MacOSX')
         else:
             return String('Unknown')
+
+
+class CharacterEncoding(Predefined):
+    """
+    <dl>
+    <dt>'$CharacterEncoding'
+      <dd>is the default character encoding for input and output.
+    </dl>
+
+    >> $CharacterEncoding
+     = ...
+
+    #> $CharacterEndocing = "ISOLatin1"
+     = ISOLatin1
+
+    #> $CharacterEncoding
+     = ISOLatin1
+
+    #> Attributes[$CharacterEncoding]
+    """
+
+    name = '$CharacterEncoding'
+    attributes = tuple()
+
+    def evaluate(self, evaluation):
+        return String(locale.getpreferredencoding())
+
+
+class SystemCharacterEncoding(Predefined):
+    """
+    <dl>
+    <dt>'$SystemCharacterEncoding'
+      <dd>is the system default character encoding for input and output.
+    </dl>
+
+    >> $SystemCharacterEncoding
+     = ...
+
+
+    #> oldenc = %;
+    #> $SystemCharacterEndocing = "ISOLatin1"
+     = ISOLatin1
+
+    #> $SystemCharacterEncoding == oldenc
+     = True
+    """
+
+    name = '$SystemCharacterEncoding'
+    attributes = ('Protected', 'Locked')
+
+    def evaluate(self, evaluation):
+        return String(locale.getpreferredencoding())
 
 
 class Read(Builtin):

@@ -32,7 +32,7 @@ if not (2, 5) <= sys.version_info[:2] <= (2, 7):
 Python %d.%d detected" % sys.version_info[:2])
     sys.exit(-1)
 
-from mathics import settings
+# from mathics import settings
 
 if sys.subversion[0] == 'PyPy':
     is_PyPy = True
@@ -91,20 +91,20 @@ class initialize(Command):
     def finalize_options(self):    # this too
         pass
 
-    def run(self):
-        import os
-        import subprocess
+    # def run(self):
+    #     import os
+    #     import subprocess
 
-        database_file = settings.DATABASES['default']['NAME']
-        print("Creating data directory %s" % settings.DATA_DIR)
-        if not os.path.exists(settings.DATA_DIR):
-            os.makedirs(settings.DATA_DIR)
-        print("Creating database %s" % database_file)
-        subprocess.call(
-            [sys.executable, 'mathics/manage.py', 'syncdb', '--noinput'])
-        os.chmod(database_file, 0o766)
-        print("")
-        print("Mathics initialized successfully.")
+    #     database_file = settings.DATABASES['default']['NAME']
+    #     print("Creating data directory %s" % settings.DATA_DIR)
+    #     if not os.path.exists(settings.DATA_DIR):
+    #         os.makedirs(settings.DATA_DIR)
+    #     print("Creating database %s" % database_file)
+    #     subprocess.call(
+    #         [sys.executable, 'mathics/manage.py', 'syncdb', '--noinput'])
+    #     os.chmod(database_file, 0o766)
+    #     print("")
+    #     print("Mathics initialized successfully.")
 
 CMDCLASS['initialize'] = initialize
 
@@ -114,7 +114,7 @@ setup(
     name="Mathics",
     cmdclass=CMDCLASS,
     ext_modules=EXTENSIONS,
-    version=settings.VERSION,
+    version='0.6', #settings.VERSION,
 
     packages=[
         'mathics',

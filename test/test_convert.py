@@ -93,9 +93,11 @@ class PythonConvert(unittest.TestCase):
     def testInteger(self):
         self.compare(mathics.Integer(1), 1)
 
-    # TODO
-    # def testString(self):
-    #     self.compare(mathics.String("abc"), "abc")
+    def testString(self):
+        self.compare(mathics.String("abc"), '"abc"')
+
+    def testSymbol(self):
+        self.compare(mathics.Symbol("abc"), "abc")
 
     def testComplex(self):
         self.compare(mathics.Complex(1, 1), 1 + 1j)

@@ -59,3 +59,5 @@ This is free software, and you are welcome to redistribute it
 under certain conditions.
 See the documentation for the full license.
 """
+
+from mathics.core.parser import parse, ParseError, ScanError

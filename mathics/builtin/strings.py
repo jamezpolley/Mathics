@@ -554,7 +554,7 @@ class ToCharacterCode(Builtin):
         if isinstance(string, list):
             codes = [[ord(char) for char in substring] for substring in string]
         elif isinstance(string, basestring):
-            codes = [ord(char) for char in string]
+            codes = [String(ord(char)) for char in string]
         return from_python(codes)
 
 
@@ -643,11 +643,11 @@ class FromCharacterCode(Builtin):
                     return evaluation.message(
                         'FromCharacterCode', 'notunicode', pyn, Integer(i + 1))
 
-            return ''.join(unichr(pyni) for pyni in pyn)
+            return String(''.join(unichr(pyni) for pyni in pyn))
 
         if isinstance(pyn, list):
             if pyn == []:
-                string = ''
+                string = String('')
             elif all(isinstance(ni, list) for ni in pyn):
                 string = []
                 for pyni in pyn:
@@ -667,7 +667,9 @@ class FromCharacterCode(Builtin):
             string = convert([pyn])
 
         if string is not None:
-            return from_python(string)
+            if isinstance(string, list):
+                string = Expression('List', *string)
+            return string
 
 
 class StringQ(Test):

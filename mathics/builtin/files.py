@@ -2314,7 +2314,7 @@ class FileNameSplit(Builtin):
             if ext != '':
                 result.insert(0, ext)
 
-        return from_python(result)
+        return Expression('List', *[String(res) for res in result])
 
 
 class FileNameJoin(Builtin):
@@ -2374,7 +2374,7 @@ class FileNameJoin(Builtin):
 
         result = os.path.join(*py_pathlist)
 
-        return from_python(result)
+        return String(result)
 
 
 class FileExtension(Builtin):
@@ -2407,7 +2407,7 @@ class FileExtension(Builtin):
         path = filename.to_python()[1:-1]
         filename_base, filename_ext = os.path.splitext(path)
         filename_ext = filename_ext.lstrip('.')
-        return from_python(filename_ext)
+        return String(filename_ext)
 
 
 class FileBaseName(Builtin):
@@ -2438,10 +2438,10 @@ class FileBaseName(Builtin):
 
     def apply(self, filename, evaluation, options):
         'FileBaseName[filename_String, OptionsPattern[FileBaseName]]'
-        path = filename.to_python()[1:-1]
+        path = filename.get_string_value()
 
         filename_base, filename_ext = os.path.splitext(path)
-        return from_python(filename_base)
+        return String(filename_base)
 
 
 class DirectoryName(Builtin):
@@ -2644,10 +2644,10 @@ class ReadList(Read):
     >> ReadList[str]
      = {abc123}
     >> InputForm[%]
-     = {"abc123"}
+     = {abc123}
 
     #> ReadList[str, "Invalid"]
-     : "Invalid" is not a valid format specification.
+     : Invalid is not a valid format specification.
      = ReadList[..., Invalid]
     #> Close[str];
 
@@ -2828,7 +2828,7 @@ class FilePrint(Builtin):
             result = result[:-1]
 
         for res in result:
-            evaluation.print_out(from_python(res))
+            evaluation.print_out(String(res))
 
         return Symbol('Null')
 
@@ -3143,7 +3143,7 @@ class Find(Read):
         while True:
             tmp = super(Find, self).apply(
                 channel, Symbol('Record'), evaluation, options)
-            py_tmp = tmp.to_python()[1:-1]
+            py_tmp = tmp.to_python()
 
             if py_tmp == 'EndOfFile':
                 evaluation.message(

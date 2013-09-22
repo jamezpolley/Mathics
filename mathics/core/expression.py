@@ -68,7 +68,7 @@ def from_python(arg):
     elif isinstance(arg, complex) or number_type == 'c':
         return Complex(arg.real, arg.imag)
     elif isinstance(arg, basestring):
-        if arg[0] == arg[-1] == '"':
+        if len(arg) >= 2 and arg[0] == arg[-1] == '"':
             return String(arg[1:-1])
         else:
             return Symbol(arg)

@@ -17,6 +17,8 @@ class FrontendTest():
 
         browser_name = self.__class__.__name__
         self.driver = getattr(webdriver, browser_name[:-4])()
+        self.driver.get("http://localhost:8000")
+        time.sleep(1)
 
     def tearDown(self):
         self.driver.close()
@@ -24,7 +26,7 @@ class FrontendTest():
 
     def test_basic(self):
         driver = self.driver
-        driver.get("http://localhost:8000")
+
         self.assertEqual("Mathics", driver.title)
 
         welcome = driver.find_element_by_id('welcome')
@@ -40,20 +42,17 @@ class FrontendTest():
 
     def test_documentation(self):
         driver = self.driver
-        driver.get("http://localhost:8000")
 
         search = driver.find_element_by_id('search')
         for key in "Plus":
             search.send_keys(key)
-            time.sleep(0.01)
+            time.sleep(0.2)
 
-        time.sleep(0.5)
         doc = driver.find_element_by_id('docContent')
         self.assertEquals(doc.find_element_by_tag_name('h1').text, 'Plus (+)')
 
     def test_query(self):
         driver = self.driver
-        driver.get("http://localhost:8000")
 
         def do_request(input, wait=0.5):
             query = driver.find_elements_by_class_name('query')[-1]

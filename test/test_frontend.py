@@ -1,4 +1,4 @@
-import unittest
+import unittest2 as unittest
 import time
 import subprocess
 from selenium import webdriver

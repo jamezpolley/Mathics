@@ -10,6 +10,7 @@ matrix:
   allow_failures:
     - env: SYMPY_SRC=master
 before_install:
+  - pip install --use-mirrors unittest2
   - pip install --use-mirrors selenium
   - pip install --use-mirrors pexpect
   - pip install --use-mirrors git+https://github.com/sympy/sympy.git@$SYMPY_SRC

@@ -70,37 +70,50 @@ class FrontendTest():
         self.assertEqual(doclink.text, "Documentation")
         doclink.click()
 
-        def get_doc(d):
-            return d.find_element_by_id("docContent")
+        until(lambda d: d.find_element_by_id("docContent").is_displayed())
+        doc = until(lambda d: d.find_element_by_id("docContent"))
+        self.assertIn("Documentation\nManual\nIntroduction\n", doc.text)
 
-        doc = until(lambda d: get_doc(d))
-        self.assertTrue(doc.is_displayed())
-        self.assertTrue(
-            doc.text.startswith("Documentation\nManual\nIntroduction\n"))
+        until(lambda d: d.find_element_by_partial_link_text("Introduction")).click()
+        until(lambda d: filter(
+            lambda t: t.text != '',
+            d.find_elements_by_tag_name("h1")) != [])
+        self.assertIn(
+            'Introduction',
+             map(lambda t: t.text, driver.find_elements_by_tag_name('h1')))
 
-        doc.find_element_by_partial_link_text("Introduction").click()
-        until(lambda d: get_doc(d).find_element_by_tag_name("h1").text == 'Introduction')
+        until(lambda d: d.find_element_by_partial_link_text("Installation")).click()
+        until(lambda d: filter(
+            lambda t: t.text != '',
+            d.find_elements_by_tag_name("h1")) != [])
+        self.assertIn(
+            "Installation",
+            map(lambda t: t.text, driver.find_elements_by_tag_name('h1')))
 
-        until(lambda d: get_doc(d).find_element_by_partial_link_text("Installation")).click()
-
-        until(lambda d: get_doc(d).find_element_by_tag_name("h1").text == "Installation")
-
-        until(lambda d: get_doc(d).find_element_by_partial_link_text("Overview")).click()
-
-        until(lambda d: get_doc(d).find_element_by_tag_name("h1").text == "Documentation")
+        until(lambda d: d.find_element_by_partial_link_text("Overview")).click()
+        until(lambda d: filter(
+            lambda t: t.text != '',
+            d.find_elements_by_tag_name("h1")) != [])
+        self.assertIn(
+            "Documentation",
+            map(lambda t: t.text, driver.find_elements_by_tag_name('h1')))
 
         doclink.click()
-        until(lambda d: not get_doc(d).is_displayed())
+        until(lambda d: not d.find_element_by_id("docContent").is_displayed())
 
     def test_doc_search(self):
         driver = self.driver
         until = self.until
 
         search = until(lambda d: d.find_element_by_id("search"))
-        self.assertEqual(search.text, "")
+        self.assertEqual(search.tag_name, 'input')
         search.send_keys("Plus")
-        doc = until(lambda d: d.find_element_by_id("docContent"))
-        self.assertEquals(doc.find_element_by_tag_name('h1').text, 'Plus (+)')
+
+        def get_heads(d):
+            return [t.text for t in d.find_elements_by_tag_name('h1')]
+
+        until(lambda d: any(get_heads(d)))
+        self.assertIn('Plus (+)', get_heads(driver))
 
     def test_keyboard_commands(self):
         driver = self.driver
@@ -109,8 +122,10 @@ class FrontendTest():
 
         # Ctrl-D
         body.send_keys(Keys.CONTROL + "D")
-        docsearch = driver.switch_to_active_element()
-        docsearch.send_keys("D")
+
+        until(lambda d: d.find_elements_by_class_name('empty') == [])
+        driver.switch_to_active_element().send_keys("D")
+
         until(lambda d: d.find_element_by_id("docContent").is_displayed())
         doc = driver.find_element_by_id('docContent')
         self.assertEqual(

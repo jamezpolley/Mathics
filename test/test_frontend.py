@@ -3,7 +3,7 @@ import subprocess
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import ui
-from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import WebDriverException, TimeoutException
 
 if sys.version_info[:2] == (2, 7):
     import unittest
@@ -11,6 +11,7 @@ else:
     import unittest2 as unittest
 
 server = None
+
 
 def setUpModule():
     global server
@@ -33,15 +34,24 @@ class FrontendTest():
         self.driver.get("http://localhost:8000")
         self.wait = ui.WebDriverWait(self.driver, 10)
 
+        def until(func):
+            try:
+                return self.wait.until(func)
+            except TimeoutException:
+                self.fail()
+
+        self.until = until
+
     def tearDown(self):
         self.driver.quit()
 
     def test_basic(self):
         driver = self.driver
+        until = self.until
 
-        self.assertEqual("Mathics", driver.title)
+        until(lambda d: d.title == 'Mathics')
 
-        welcome = driver.find_element_by_id('welcome')
+        welcome = until(lambda d: d.find_element_by_id('welcome'))
         self.assertEqual(
             welcome.text,
             "Welcome to Mathics!\n"
@@ -54,90 +64,85 @@ class FrontendTest():
 
     def test_doc_links(self):
         driver = self.driver
-        wait = self.wait
+        until = self.until
 
-        doclink = wait.until(lambda d: d.find_element_by_id("doclink"))
+        doclink = until(lambda d: d.find_element_by_id("doclink"))
         self.assertEqual(doclink.text, "Documentation")
         doclink.click()
 
-        doc = wait.until(lambda d: d.find_element_by_id("docContent"))
+        def get_doc(d):
+            return d.find_element_by_id("docContent")
+
+        doc = until(lambda d: get_doc(d))
         self.assertTrue(doc.is_displayed())
         self.assertTrue(
             doc.text.startswith("Documentation\nManual\nIntroduction\n"))
 
         doc.find_element_by_partial_link_text("Introduction").click()
-        doc = wait.until(lambda d: d.find_element_by_id("docContent"))
-        self.assertEqual(
-            wait.until(lambda d: doc.find_element_by_tag_name("h1")).text,
-            "Introduction")
+        until(lambda d: get_doc(d).find_element_by_tag_name("h1").text == 'Introduction')
 
-        doc.find_element_by_partial_link_text("Installation").click()
-        doc = wait.until(lambda d: d.find_element_by_id("docContent"))
-        self.assertEqual(
-            wait.until(lambda d: doc.find_element_by_tag_name("h1")).text,
-            "Installation")
+        until(lambda d: get_doc(d).find_element_by_partial_link_text("Installation")).click()
 
-        doc.find_element_by_partial_link_text("Overview").click()
-        doc = wait.until(lambda d: d.find_element_by_id("docContent"))
-        self.assertEqual(
-            wait.until(lambda d: doc.find_element_by_tag_name("h1")).text,
-            "Documentation")
+        until(lambda d: get_doc(d).find_element_by_tag_name("h1").text == "Installation")
+
+        until(lambda d: get_doc(d).find_element_by_partial_link_text("Overview")).click()
+
+        until(lambda d: get_doc(d).find_element_by_tag_name("h1").text == "Documentation")
 
         doclink.click()
-        doc = wait.until(lambda d: d.find_element_by_id("docContent"))
-        self.assertFalse(doc.is_displayed())
+        until(lambda d: not get_doc(d).is_displayed())
 
     def test_doc_search(self):
         driver = self.driver
-        wait = self.wait
+        until = self.until
 
-        search = wait.until(lambda d: d.find_element_by_id("search"))
+        search = until(lambda d: d.find_element_by_id("search"))
         self.assertEqual(search.text, "")
         search.send_keys("Plus")
-        doc = wait.until(lambda d: d.find_element_by_id("docContent"))
+        doc = until(lambda d: d.find_element_by_id("docContent"))
         self.assertEquals(doc.find_element_by_tag_name('h1').text, 'Plus (+)')
 
     def test_keyboard_commands(self):
         driver = self.driver
-        wait = self.wait
-        body = wait.until(lambda d: d.find_element_by_tag_name("body"))
+        until = self.until
+        body = until(lambda d: d.find_element_by_tag_name("body"))
 
         # Ctrl-D
         body.send_keys(Keys.CONTROL + "D")
         docsearch = driver.switch_to_active_element()
         docsearch.send_keys("D")
-        wait.until(lambda d: d.find_element_by_id("docContent").is_displayed())
+        until(lambda d: d.find_element_by_id("docContent").is_displayed())
         doc = driver.find_element_by_id('docContent')
         self.assertEqual(
             doc.find_element_by_tag_name("h1").text, "D")
 
         # Ctrl-C
         body.send_keys(Keys.CONTROL + "C")
-        wait.until(lambda d: (
+        until(lambda d: (
             d.switch_to_active_element().tag_name == "textarea"))
 
         # Ctrl-O
         popup = driver.find_element_by_id("open")
         self.assertFalse(popup.is_displayed())
         body.send_keys(Keys.CONTROL + "O")
-        wait.until(lambda d: popup.is_displayed())
+        until(lambda d: popup.is_displayed())
         popup.find_element_by_class_name("cancel").click()
-        wait.until(lambda d: not popup.is_displayed())
+        until(lambda d: not popup.is_displayed())
 
         # Ctrl-S
         popup = driver.find_element_by_id("save")
         self.assertFalse(popup.is_displayed())
         body.send_keys(Keys.CONTROL + "S")
-        wait.until(lambda d: popup.is_displayed())
+        until(lambda d: popup.is_displayed())
         popup.find_element_by_class_name("cancel").click()
-        wait.until(lambda d: not popup.is_displayed())
+        until(lambda d: not popup.is_displayed())
 
     def test_query(self):
         driver = self.driver
-        wait = self.wait
+        until = self.until
 
         def do_request(input):
-            q= driver.find_elements_by_class_name('query')[-1]
+            q = driver.find_elements_by_class_name('query')[-1]
 
             # Evaluate the query
             request = q.find_element_by_tag_name('textarea')
@@ -145,7 +150,7 @@ class FrontendTest():
             request.send_keys(Keys.SHIFT + Keys.RETURN)
 
             # Wait for the response
-            return wait.until(lambda d: q.find_element_by_class_name("out"))
+            return until(lambda d: q.find_element_by_class_name("out"))
 
         self.assertEquals(
             do_request('1+1').text, '2')

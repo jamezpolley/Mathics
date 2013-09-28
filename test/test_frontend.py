@@ -1,9 +1,14 @@
-import unittest2 as unittest
+import sys
 import time
 import subprocess
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import WebDriverException
+
+if sys.version_info[:2] == (2, 7):
+    import unittest
+else:
+    import unittest2 as unittest
 
 
 class FrontendTest():

@@ -10,15 +10,24 @@ if sys.version_info[:2] == (2, 7):
 else:
     import unittest2 as unittest
 
+server = None
+
+def setUpModule():
+    global server
+    server = subprocess.Popen(
+        ['python2', 'mathics/server.py'],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE)
+
+
+def tearDownModule():
+    global server
+    server.terminate()
+
 
 class FrontendTest():
 
     def setUp(self):
-        self.server = subprocess.Popen(
-            ['python2', 'mathics/server.py'],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)
-
         browser_name = self.__class__.__name__
         self.driver = getattr(webdriver, browser_name[:-4])()
         self.driver.get("http://localhost:8000")
@@ -26,7 +35,6 @@ class FrontendTest():
 
     def tearDown(self):
         self.driver.quit()
-        self.server.terminate()
 
     def test_basic(self):
         driver = self.driver

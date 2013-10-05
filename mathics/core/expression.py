@@ -526,7 +526,6 @@ class Expression(BaseExpression):
                     pattern += 10
                 else:
                     pattern += 20
-            if pattern > 0:
                 return [2, pattern, 1, 1, 0, self.head.get_sort_key(True),
                         [leaf.get_sort_key(True) for leaf in self.leaves], 1]
 
@@ -575,11 +574,9 @@ class Expression(BaseExpression):
             else:
                 # Append (4,) to leaves so that longer expressions have higher
                 # precedence
-                result = [
+                return [
                     2, 0, 1, 1, 0, self.head.get_sort_key(True),
-                    [leaf.get_sort_key(True) for leaf in self.leaves] + [(4,)],
-                    1]
-                return result
+                    [leaf.get_sort_key(True) for leaf in self.leaves] + [(4,)], 1]
         else:
             exps = {}
             head = self.head.get_name()

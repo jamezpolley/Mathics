@@ -13,6 +13,7 @@ from mathics.builtin.base import Builtin
 from mathics.builtin.scoping import dynamic_scoping
 from mathics.builtin.options import options_to_rules
 from mathics.builtin.numeric import chop
+from sympy.utilities.lambdify import lambdify
 
 
 class ColorDataFunction(Builtin):
@@ -686,7 +687,7 @@ class _Plot3D(Builtin):
             return False
 
         if plotpoints == 'None':
-            plotpoints = [7, 7]
+            plotpoints = [14, 14]
         elif check_plotpoints(plotpoints):
             plotpoints = [plotpoints, plotpoints]
 
@@ -694,25 +695,33 @@ class _Plot3D(Builtin):
                 check_plotpoints(plotpoints[0]) and
                 check_plotpoints(plotpoints[1])):
             evaluation.message(self.get_name(), 'invpltpts', plotpoints)
-            plotpoints = [7, 7]
+            plotpoints = [14, 14]
 
         graphics = []
         for indx, f in enumerate(functions):
             stored = {}
 
-            def eval_f(x_value, y_value):
-                value = stored.get((x_value, y_value), False)
-                if value is False:
-                    value = quiet_evaluate(f, {x: Real(
-                        x_value), y: Real(y_value)}, evaluation)
-                    # value = dynamic_scoping(
-                    #    f.evaluate, {x: Real(x_value), y: Real(y_value)},
-                    #    evaluation)
-                    # value = chop(value).get_real_value()
-                    if value is not None:
-                        value = float(value)
-                    stored[(x_value, y_value)] = value
-                return value
+            try:
+                # Attempt to lambdify the expression for speed
+                eval_f = lambdify((x.to_sympy(), y.to_sympy()), f.to_sympy())
+
+                # Check that the evaluation is numeric (at some point)
+                z_value = eval_f(xstart + 0.001* (xstop - xstart),
+                                 ystart + 0.001* (ystop - ystart))
+                if not isinstance(z_value, float):
+                    raise Exception("Not numeric value")
+            except Exception:
+                # Fallback to (slow) Mathics evaluation
+                def eval_f(x_value, y_value):
+                    value = stored.get((x_value, y_value), False)
+                    if value is False:
+                        value = quiet_evaluate(f, {x: Real(
+                            x_value), y: Real(y_value)}, evaluation)
+                        if value is not None:
+                            value = float(value)
+                        stored[(x_value, y_value)] = value
+                    return value
+
 
             v_borders = [None, None]
 

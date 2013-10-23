@@ -163,7 +163,7 @@ def from_sympy(expr):
     if expr.is_Atom:
         name = None
         if expr.is_Symbol:
-            name = unicode(expr)
+            name = expr.name.decode('utf-8')
             if isinstance(expr, symbol.Dummy):
                 name = name + ('__Dummy_%d' % expr.dummy_index)
                 return Symbol(name, sympy_dummy=expr)

@@ -309,7 +309,7 @@ class Expand(Builtin):
                 if has_plus:
                     return Expression(
                         'Plus', *(expand(Expression('Times', *item))
-                        for item in result))
+                                  for item in result))
 
                 else:
                     return Expression('Plus', *(

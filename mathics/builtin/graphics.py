@@ -907,10 +907,8 @@ class InsetBox(_GraphicsElement):
         content = self.content.boxes_to_xml(
             evaluation=self.graphics.evaluation)
         style = create_css(font_color=self.color)
-        svg = (
-            '<foreignObject x="%f" y="%f" ox="%f" oy="%f" style="%s">'
-            '<math>%s</math></foreignObject>') % (
-                x, y, self.opos[0], self.opos[1], style, content)
+        svg = '<foreignObject x="%f" y="%f" ox="%f" oy="%f" style="%s"><math>%s</math></foreignObject>' % (
+            x, y, self.opos[0], self.opos[1], style, content)
         return svg
 
     def to_asy(self):

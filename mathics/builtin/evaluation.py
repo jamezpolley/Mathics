@@ -57,9 +57,8 @@ class RecursionLimit(Predefined):
     messages = {
         'reclim': "Recursion depth of `1` exceeded.",
         'limset': (
-            "Cannot set $RecursionLimit to `1`; "
-            "value must be an integer between 20 and %d.") % (
-                settings.MAX_RECURSION_DEPTH),
+            "Cannot set $RecursionLimit to `1`; value must be an integer "
+            "between 20 and {0}.".format(settings.MAX_RECURSION_DEPTH)),
     }
 
     rules = {

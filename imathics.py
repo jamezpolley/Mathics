@@ -9,6 +9,10 @@ from threading import Thread
 from IPython.utils.localinterfaces import LOCALHOST
 from IPython.kernel.zmq.session import Session
 
+from mathics.core.definitions import Definitions
+from mathics.core.evaluation import Evaluation
+from mathics.core.expression import Integer
+from mathics.settings import TIMEOUT
 
 class Heartbeat(Thread):
     "A simple ping-pong style heartbeat that runs in a thread."
@@ -45,7 +49,9 @@ class Kernel(object):
         self.session.send(self.iopub, 'status',
                           content={'execution_state': 'starting'})
 
-        # TODO Start the mathics kernel
+        # Load the defintions
+        self.definitions = Definitions(add_builtin=True)
+        self.execution_count(0)
 
         self.session.send(self.iopub, 'status',
                           content={'execution_state': 'idle'})
@@ -63,6 +69,29 @@ class Kernel(object):
                 raise ValueError("Unknown msg_type %s" % shell_msg['msg_type'])
             handler(shell_msg)
 
+    def publish(self, text):
+        self.session.send(
+            self.iopub, 'pyout', content={
+                'execution_count': self.execution_count(),
+                'data': {'text/plain': unicode(text)},
+                'metadata': {},
+            })
+
+    def evaluate(self, text):
+        evaluation = Evaluation(text, self.definitions, timeout=TIMEOUT,
+                                out_callback=self.publish)
+        for result in evaluation.results:
+            if result.result:
+                self.publish(result.result)
+
+    def execution_count(self, number=None):
+        "returns the current $Line integer, optionally also sets $Line first"
+        if number is not None:
+            self.definitions.set_ownvalue('$Line', Integer(number))
+            return number
+        else:
+            return self.definitions.get_ownvalues('$Line')[0].replace.get_int_value()
+
     def kernel_info_request(self, shell_msg):
         self.session.send(
             self.shell, 'kernel_info_reply',
@@ -78,26 +107,15 @@ class Kernel(object):
         self.session.send(
             self.iopub, 'status', content={'execution_state': 'busy'})
 
-        # self.session.send(
-        #     self.iopub, 'pyin', content={
-        #         'code': request_content['code'],
-        #         'execution_count': 1})
+        self.evaluate(request_content['code'])
 
-        # evaluate the code
-        result_text = "eval(" + request_content['code'] + ")"
-
-        self.session.send(
-            self.iopub, 'pyout', content={
-                'execution_count': 1,
-                'data': {'text/plain': result_text},
-                'metadata': {}})
-
+        # FIXME What about errors?
         # sucessful execution
         self.session.send(
             self.shell, 'execute_reply', parent=shell_msg['header'],
             content={
                 'status': 'ok',
-                'execution_count': 1,
+                'execution_count': self.execution_count(),
                 'payload': [],
                 'user_variables': {},
                 'user_expressions': {}})

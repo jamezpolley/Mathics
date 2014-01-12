@@ -14,6 +14,7 @@ from mathics.core.evaluation import Evaluation
 from mathics.core.expression import Integer
 from mathics.settings import TIMEOUT
 
+
 class Heartbeat(Thread):
     "A simple ping-pong style heartbeat that runs in a thread."
     def __init__(self, context, config):
@@ -69,60 +70,70 @@ class Kernel(object):
                 raise ValueError("Unknown msg_type %s" % shell_msg['msg_type'])
             handler(shell_msg)
 
-    def publish(self, text):
-        self.session.send(
-            self.iopub, 'pyout', content={
-                'execution_count': self.execution_count(),
-                'data': {'text/plain': unicode(text)},
-                'metadata': {},
-            })
-
-    def evaluate(self, text):
-        evaluation = Evaluation(text, self.definitions, timeout=TIMEOUT,
-                                out_callback=self.publish)
-        for result in evaluation.results:
-            if result.result:
-                self.publish(result.result)
-
     def execution_count(self, number=None):
         "returns the current $Line integer, optionally also sets $Line first"
         if number is not None:
             self.definitions.set_ownvalue('$Line', Integer(number))
             return number
         else:
-            return self.definitions.get_ownvalues('$Line')[0].replace.get_int_value()
+            line = self.definitions.get_ownvalues('$Line')[0].replace
+            return line.get_int_value()
 
     def kernel_info_request(self, shell_msg):
         self.session.send(
-            self.shell, 'kernel_info_reply',
-            parent=shell_msg['header'], content={
+            self.shell, 'kernel_info_reply', content={
                 'protocol_version': [1, 1, 0],
                 'language_version': [0, 6],
-                'language': 'mathics'})
+                'language': 'mathics'
+            }, parent=shell_msg)
 
     def execute_request(self, shell_msg):
         request_content = shell_msg['content']
 
         # report the kernel as busy
         self.session.send(
-            self.iopub, 'status', content={'execution_state': 'busy'})
+            self.iopub, 'status', content={'execution_state': 'busy'},
+            parent=shell_msg)
 
-        self.evaluate(request_content['code'])
+        def publish(text):
+            self.session.send(
+                self.iopub, 'pyout', content={
+                    'execution_count': self.execution_count(),
+                    'data': {'text/plain': unicode(text)},
+                    'metadata': {},
+                }, parent=shell_msg)
 
-        # FIXME What about errors?
+        code = request_content['code']
+        self.session.send(
+            self.iopub, 'pyin', content={
+                'execution_count': self.execution_count(),
+                'data': {'text/plain': code},
+                'metadata': {},
+            }, parent=shell_msg)
+
+        evaluation = Evaluation(code,
+                                self.definitions, timeout=TIMEOUT,
+                                out_callback=publish)
+        for result in evaluation.results:
+            if result.result:
+                publish(result.result)
+
+        # TODO Errors?
+
         # sucessful execution
         self.session.send(
-            self.shell, 'execute_reply', parent=shell_msg['header'],
-            content={
+            self.shell, 'execute_reply', content={
                 'status': 'ok',
                 'execution_count': self.execution_count(),
-                'payload': [],
                 'user_variables': {},
-                'user_expressions': {}})
+                'payload': [],
+                'user_expressions': {}
+            }, parent=shell_msg)
 
         # report the kernel as idle
-        self.session.send(self.iopub, 'status',
-                          content={'execution_state': 'idle'})
+        self.session.send(
+            self.iopub, 'status', content={'execution_state': 'idle'},
+            parent=shell_msg)
 
 
 if __name__ == '__main__':

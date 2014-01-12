@@ -323,8 +323,8 @@ class Evaluation(object):
             'StringForm', text, *(from_python(arg) for arg in args)))
 
         self.out.append(Message(symbol, tag, text))
-        if self.out_callback:
-            self.out_callback(self.out[-1])
+        # if self.out_callback:
+        #     self.out_callback(self.out[-1])
 
     def print_out(self, text):
         from mathics.core.expression import from_python

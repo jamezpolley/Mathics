@@ -111,23 +111,32 @@ class Kernel(object):
                 'metadata': {},
             }, parent=shell_msg)
 
-        evaluation = Evaluation(code,
-                                self.definitions, timeout=TIMEOUT,
-                                out_callback=publish)
-        for result in evaluation.results:
-            if result.result:
-                publish(result.result)
+        evaluation = Evaluation(
+            code, self.definitions, timeout=TIMEOUT, out_callback=publish)
+        results = [result.get_data() for result in evaluation.results]
 
-        # TODO Errors?
+        status = 'ok'
+        for result in results:
+            for msg in result['out']:
+                status = 'error'
+                self.session.send(
+                    self.iopub, 'pyerr', content={
+                        'execution_count': self.execution_count(),
+                        'ename': msg['prefix'],
+                        'evalue': msg['text'],
+                        # 'traceback': [''],
+                        'traceback': [msg['prefix'] + msg['text']],
+                    }, parent=shell_msg)
+            if result['result'] is not None:
+                publish(result['result'])
 
-        # sucessful execution
         self.session.send(
             self.shell, 'execute_reply', content={
-                'status': 'ok',
+                'status': status,
                 'execution_count': self.execution_count(),
                 'user_variables': {},
                 'payload': [],
-                'user_expressions': {}
+                'user_expressions': {},
             }, parent=shell_msg)
 
         # report the kernel as idle

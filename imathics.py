@@ -31,6 +31,7 @@ class Heartbeat(Thread):
 
 
 class Kernel(object):
+    "IPython kernel for Mathics"
     def __init__(self, context, config):
         self.context = context
         self.config = config

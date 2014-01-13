@@ -128,7 +128,12 @@ class Kernel(object):
                         'traceback': [msg['prefix'] + msg['text']],
                     }, parent=shell_msg)
             if result['result'] is not None:
-                publish(result['result'])
+                self.session.send(
+                    self.iopub, 'pyout', content={
+                        'execution_count': result['line'],
+                        'data': {'text/plain': result['result']},
+                        'metadata': {},
+                    }, parent=shell_msg)
 
         self.session.send(
             self.shell, 'execute_reply', content={

@@ -59,16 +59,22 @@ class Kernel(object):
 
         # Event Loop
         while True:
-            shell_idents, shell_msg = self.session.recv(self.shell)
+            try:
+                shell_idents, shell_msg = self.session.recv(self.shell)
 
-            if shell_msg is None:
+                if shell_msg is None:
+                    continue
+
+                msg_type = shell_msg['msg_type']
+                handler = getattr(self, shell_msg['msg_type'], None)
+                if handler is None:
+                    raise ValueError(
+                        "Unknown msg_type %s" % shell_msg['msg_type'])
+                handler(shell_msg)
+            except KeyboardInterrupt:
+                # Interrupts during Evaluation return $Aborted. Here we just
+                # ignore it and wait for the next message
                 continue
-
-            msg_type = shell_msg['msg_type']
-            handler = getattr(self, shell_msg['msg_type'], None)
-            if handler is None:
-                raise ValueError("Unknown msg_type %s" % shell_msg['msg_type'])
-            handler(shell_msg)
 
     def execution_count(self, number=None):
         "returns the current $Line integer, optionally also sets $Line first"

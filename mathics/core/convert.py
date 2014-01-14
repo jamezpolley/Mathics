@@ -297,5 +297,9 @@ def from_sympy(expr):
     elif isinstance(expr, sympy.Equality):
         return Expression('Equal',
                           [from_sympy(arg) for arg in expr.args])
+    elif isinstance(expr, sympy.boolalg.BooleanTrue):
+        return Symbol('True')
+    elif isinstance(expr, sympy.boolalg.BooleanFalse):
+        return Symbol('False')
     else:
         raise ValueError("Unknown SymPy expression: %s" % expr)

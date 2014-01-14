@@ -384,6 +384,9 @@ class Integrate(SympyFunction):
 
     >> Integrate[f'[x], {x, a, b}]
      = -f[a] + f[b]
+
+    #> Integrate[Sin[k x], x]
+     = Piecewise[{{0, k == 0}, {-Cos[k x] / k, True}}]
     """
 
     # TODO

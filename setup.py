@@ -132,9 +132,6 @@ setup(
 
     install_requires=INSTALL_REQUIRES,
 
-    # This can be removed once we move to sympy>=0.7.4
-    dependency_links=['https://github.com/sympy/sympy/releases'],
-
     package_data={
         'mathics.doc': ['documentation/*.mdoc', 'xml/data'],
         'mathics.web': [

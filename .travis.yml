@@ -15,6 +15,9 @@ matrix:
           - TEST_DOC="true"
     allow_failures:
       - env: SYMPY_SRC=master
+      - env:
+          - SYMPY_SRC=sympy-0.7.5
+          - TEST_DOC="true"
 before_install:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
